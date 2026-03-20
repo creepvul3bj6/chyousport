@@ -1090,7 +1090,9 @@ function showDetail(id) {
   // 尺寸選擇器
   const sizeWrap = document.getElementById('detailSizeWrap');
   const addBtn = document.getElementById('detailAddBtn');
-  const sizes = p.sizes || [];
+  // Supabase 回來是字串，先轉陣列
+  let sizes = p.sizes || [];
+  if (typeof sizes === 'string') sizes = sizes.split(',').map(s=>s.trim()).filter(Boolean);
   if (sizes.length > 0) {
     addBtn.disabled = true;
     addBtn.style.opacity = '0.35';
@@ -1157,7 +1159,8 @@ function changeDetailQty(delta) {
   document.getElementById('detailQtyNum').textContent = detailQty;
 
   // 有尺寸的商品：數量變了要重新檢查按鈕狀態
-  const sizes = p.sizes || [];
+  let sizes = p.sizes || [];
+  if (typeof sizes === 'string') sizes = sizes.split(',').map(s=>s.trim()).filter(Boolean);
   if (sizes.length > 0) {
     const selected = [...document.querySelectorAll('.size-btn.active')];
     // 如果已選尺寸數超過新數量，移除多的
@@ -1213,9 +1216,8 @@ function addDetailToCart() {
   const p = products.find(x => x.id === currentDetailId);
   if (!p) return;
 
-  const sizes = p.sizes || [];
-  if (sizes.length > 0) {
-    // 每個選到的尺寸各加一筆
+  let sizes = p.sizes || [];
+  if (typeof sizes === 'string') sizes = sizes.split(',').map(s=>s.trim()).filter(Boolean);
     const selectedBtns = [...document.querySelectorAll('.size-btn.active')];
     selectedBtns.forEach(btn => {
       const s = btn.textContent.trim();
