@@ -874,12 +874,12 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
                 <option value="limited">限量</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="stockFieldWrap">
               <label>庫存</label>
               <input type="number" id="pf-stock" placeholder="99">
             </div>
             <div class="form-group" style="grid-column:1/-1">
-              <label>尺寸 & 各尺寸庫存（選填）</label>
+              <label>尺寸 & 各尺寸庫存（選填）<span style="color:var(--gray-light);font-weight:normal;font-size:0.75em;margin-left:0.5rem;">填了尺寸後庫存自動加總</span></label>
               <div class="size-stock-list" id="sizeStockList"></div>
               <div class="add-size-row">
                 <input type="text" id="newSizeInput" placeholder="輸入尺寸，例：23.5" onkeydown="if(event.key==='Enter'){addSizeRow();event.preventDefault();}">
@@ -1120,7 +1120,11 @@ function showDetail(id) {
   document.getElementById('detailCat').textContent = p.cat;
   document.getElementById('detailName').textContent = p.name;
   document.getElementById('detailDesc').textContent = p.desc;
-  document.getElementById('detailStock').textContent = `庫存：${p.stock} 件`;
+  // 庫存顯示：有尺寸就加總各尺寸，沒尺寸就用 stock 欄位
+  const sizeStockTotal = Object.keys(p.sizes||{}).length > 0
+    ? Object.values(p.sizes).reduce((a,b)=>a+(parseInt(b)||0),0)
+    : p.stock;
+  document.getElementById('detailStock').textContent = `庫存：${sizeStockTotal} 件`;
   document.getElementById('detailQtyNum').textContent = 1;
 
   // 尺寸選擇器
@@ -1396,10 +1400,11 @@ function renderSizeStockList(sizesObj) {
   list.innerHTML = entries.map(([s, stock]) => `
     <div class="size-stock-row" data-size="${s}">
       <span class="size-label">${s}</span>
-      <input type="number" min="0" value="${parseInt(stock)||0}" placeholder="庫存" data-stock-for="${s}">
+      <input type="number" min="0" value="${parseInt(stock)||0}" placeholder="庫存" data-stock-for="${s}" oninput="syncSizeStockTotal()">
       <button class="remove-size" onclick="removeSizeRow('${s}')">✕</button>
     </div>
   `).join('');
+  syncSizeStockTotal();
 }
 
 function addSizeRow() {
@@ -1413,17 +1418,19 @@ function addSizeRow() {
   row.setAttribute('data-size', val);
   row.innerHTML = `
     <span class="size-label">${val}</span>
-    <input type="number" min="0" value="0" placeholder="庫存" data-stock-for="${val}">
+    <input type="number" min="0" value="1" placeholder="庫存" data-stock-for="${val}" oninput="syncSizeStockTotal()">
     <button class="remove-size" onclick="removeSizeRow('${val}')">✕</button>
   `;
   list.appendChild(row);
   input.value = '';
   input.focus();
+  syncSizeStockTotal();
 }
 
 function removeSizeRow(s) {
   const row = document.querySelector('#sizeStockList [data-size="' + s + '"]');
   if (row) row.remove();
+  syncSizeStockTotal();
 }
 
 function getSizeStockData() {
@@ -1434,6 +1441,25 @@ function getSizeStockData() {
     if (s) result[s] = parseInt(stockEl ? stockEl.value : 0) || 0;
   });
   return result;
+}
+
+function syncSizeStockTotal() {
+  const rows = document.querySelectorAll('#sizeStockList .size-stock-row');
+  const stockWrap = document.getElementById('stockFieldWrap');
+  const stockInput = document.getElementById('pf-stock');
+  if (rows.length > 0) {
+    // 有尺寸：隱藏庫存欄，自動加總
+    if (stockWrap) stockWrap.style.display = 'none';
+    let total = 0;
+    rows.forEach(row => {
+      const el = row.querySelector('input[type=number]');
+      total += parseInt(el ? el.value : 0) || 0;
+    });
+    if (stockInput) stockInput.value = total;
+  } else {
+    // 沒尺寸：顯示庫存欄
+    if (stockWrap) stockWrap.style.display = '';
+  }
 }
 
 // IMAGE UPLOAD
