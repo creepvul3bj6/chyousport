@@ -981,6 +981,7 @@ function rowToProduct(r) {
     stock: parseInt(r.stock) || 0,
     desc: r.desc || '',
     imgs: [r.img0||null, r.img1||null, r.img2||null, r.img3||null],
+    sizes: Array.isArray(r.sizes) ? r.sizes : (r.sizes ? r.sizes.replace(/[\[\]"]/g,'').split(',').map(s=>s.trim()).filter(Boolean) : []),
   };
 }
 
