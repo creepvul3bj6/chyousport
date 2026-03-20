@@ -1385,6 +1385,56 @@ function goToSellShip() {
 }
 
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// SIZE STOCK ADMIN HELPERS
+// ══════════════════════════════════════
+function renderSizeStockList(sizesObj) {
+  const list = document.getElementById('sizeStockList');
+  if (!list) return;
+  const entries = Object.entries(sizesObj || {});
+  list.innerHTML = entries.map(([s, stock]) => `
+    <div class="size-stock-row" data-size="${s}">
+      <span class="size-label">${s}</span>
+      <input type="number" min="0" value="${parseInt(stock)||0}" placeholder="庫存" data-stock-for="${s}">
+      <button class="remove-size" onclick="removeSizeRow('${s}')">✕</button>
+    </div>
+  `).join('');
+}
+
+function addSizeRow() {
+  const input = document.getElementById('newSizeInput');
+  const val = input.value.trim();
+  if (!val) return;
+  const list = document.getElementById('sizeStockList');
+  if (list.querySelector('[data-size="' + val + '"]')) { input.value=''; return; }
+  const row = document.createElement('div');
+  row.className = 'size-stock-row';
+  row.setAttribute('data-size', val);
+  row.innerHTML = `
+    <span class="size-label">${val}</span>
+    <input type="number" min="0" value="0" placeholder="庫存" data-stock-for="${val}">
+    <button class="remove-size" onclick="removeSizeRow('${val}')">✕</button>
+  `;
+  list.appendChild(row);
+  input.value = '';
+  input.focus();
+}
+
+function removeSizeRow(s) {
+  const row = document.querySelector('#sizeStockList [data-size="' + s + '"]');
+  if (row) row.remove();
+}
+
+function getSizeStockData() {
+  const result = {};
+  document.querySelectorAll('#sizeStockList .size-stock-row').forEach(row => {
+    const s = row.getAttribute('data-size');
+    const stockEl = row.querySelector('input[type=number]');
+    if (s) result[s] = parseInt(stockEl ? stockEl.value : 0) || 0;
+  });
+  return result;
+}
+
 // IMAGE UPLOAD
 // ══════════════════════════════════════
 function removeImg(idx) {
