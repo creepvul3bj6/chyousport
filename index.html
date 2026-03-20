@@ -324,6 +324,8 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
 .img-upload-icon { font-size:1.8rem; margin-bottom:0.3rem; color:var(--gray-light); }
 .img-upload-label { font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gray-light); }
 .img-upload-box.has-img .img-upload-icon, .img-upload-box.has-img .img-upload-label { display:none; }
+.img-remove-btn { position:absolute; top:4px; right:4px; width:22px; height:22px; background:rgba(232,41,28,0.9); border:none; color:white; font-size:0.75rem; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; border-radius:2px; line-height:1; }
+.img-remove-btn:hover { background:var(--red-dark); }
 
 .btn-save { font-family:'Barlow Condensed',sans-serif; font-size:0.82rem; letter-spacing:0.15em; text-transform:uppercase; background:var(--red); color:var(--white); border:none; padding:0.75rem 2rem; cursor:none; transition:background .2s; margin-right:0.8rem; }
 .btn-save:hover { background:var(--red-dark); }
@@ -1291,6 +1293,19 @@ function goToSellShip() {
 // ══════════════════════════════════════
 // IMAGE UPLOAD
 // ══════════════════════════════════════
+function removeImg(idx) {
+  const icons = ['📷','＋','＋','＋'];
+  const labels = ['封面照','內頁照 1','內頁照 2','內頁照 3'];
+  pendingFiles[idx] = null;
+  pendingImgs[idx] = null;
+  const box = document.getElementById('imgBox' + idx);
+  box.classList.remove('has-img');
+  box.innerHTML = `
+    <input type="file" id="imgInput${idx}" accept="image/*" onchange="handleImgUpload(${idx},this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+    <div class="img-upload-icon">${icons[idx]}</div>
+    <div class="img-upload-label">${labels[idx]}</div>`;
+}
+
 function handleImgUpload(idx, input) {
   const file = input.files[0];
   if (!file) return;
@@ -1299,7 +1314,7 @@ function handleImgUpload(idx, input) {
   reader.onload = function(e) {
     pendingImgs[idx] = e.target.result; // preview only
     const box = document.getElementById('imgBox' + idx);
-    box.innerHTML = `<img src="${e.target.result}" alt="" style="width:100%;height:100%;object-fit:cover;"><input type="file" id="imgInput${idx}" accept="image/*" onchange="handleImgUpload(${idx},this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">`;
+    box.innerHTML = `<img src="${e.target.result}" alt="" style="width:100%;height:100%;object-fit:cover;"><input type="file" id="imgInput${idx}" accept="image/*" onchange="handleImgUpload(${idx},this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;"><button class="img-remove-btn" onclick="event.stopPropagation();removeImg(${idx})">✕</button>`;
     box.classList.add('has-img');
   };
   reader.readAsDataURL(file);
@@ -1504,7 +1519,7 @@ function editProduct(id) {
     const box = document.getElementById('imgBox'+i);
     if (pendingImgs[i]) {
       box.classList.add('has-img');
-      box.innerHTML = `<img src="${pendingImgs[i]}" alt="" style="width:100%;height:100%;object-fit:cover;"><input type="file" id="imgInput${i}" accept="image/*" onchange="handleImgUpload(${i},this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">`;
+      box.innerHTML = `<img src="${pendingImgs[i]}" alt="" style="width:100%;height:100%;object-fit:cover;"><input type="file" id="imgInput${i}" accept="image/*" onchange="handleImgUpload(${i},this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;"><button class="img-remove-btn" onclick="event.stopPropagation();removeImg(${i})">✕</button>`;
     } else {
       const labels = ['封面照','內頁照 1','內頁照 2','內頁照 3'];
       const icons = ['📷','＋','＋','＋'];
