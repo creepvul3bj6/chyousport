@@ -1218,6 +1218,8 @@ function addDetailToCart() {
 
   let sizes = p.sizes || [];
   if (typeof sizes === 'string') sizes = sizes.split(',').map(s=>s.trim()).filter(Boolean);
+
+  if (sizes.length > 0) {
     const selectedBtns = [...document.querySelectorAll('.size-btn.active')];
     selectedBtns.forEach(btn => {
       const s = btn.textContent.trim();
