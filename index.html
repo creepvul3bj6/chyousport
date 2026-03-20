@@ -172,10 +172,10 @@ nav {
 .detail-size-wrap { margin-bottom:1.8rem; }
 .detail-size-label { font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gray-light); margin-bottom:0.8rem; display:flex; align-items:center; gap:0.5rem; }
 .detail-size-selected { color:var(--white); font-weight:600; }
-.detail-size-btns { display:flex; flex-wrap:wrap; gap:0.5rem; }
-.size-btn { font-family:'Barlow Condensed',sans-serif; font-size:0.88rem; letter-spacing:0.05em; background:transparent; color:var(--white); border:1px solid var(--gray-mid); padding:0.5rem 0.9rem; cursor:none; transition:all .18s; min-width:52px; text-align:center; }
-.size-btn:hover { border-color:var(--white); }
-.size-btn.active { background:var(--red); border-color:var(--red); color:var(--white); }
+.detail-size-btns { display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:0.5rem; }
+.size-btn { font-family:'Barlow Condensed',sans-serif; font-size:0.95rem; letter-spacing:0.05em; background:transparent; color:var(--white); border:1px solid var(--gray-mid); padding:0.65rem 0.5rem; cursor:none; transition:all .18s; text-align:center; width:100%; }
+.size-btn:hover { border-color:var(--white); background:rgba(255,255,255,0.05); }
+.size-btn.active { background:var(--red); border-color:var(--red); color:var(--white); font-weight:600; }
 .detail-stock { font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gray-light); margin-bottom:1.5rem; }
 .detail-qty { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
 .qty-ctrl { display:flex; align-items:center; gap:0; border:1px solid var(--gray-mid); }
@@ -584,7 +584,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
       <span class="outline">的夥伴</span><br>
       <span class="red">就找我們</span>
     </h1>
-    <p class="hero-sub">從棒壘到桌球、羽球到田徑，球友體育用品社四十年專業，為你找到最適合的裝備。</p>
+    <p class="hero-sub">從棒壘到桌球、羽球到路跑，球友體育用品社四十年專業，為你找到最適合的裝備。</p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})">立即選購</button>
       <button class="btn-outline" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">查看分類</button>
@@ -607,13 +607,13 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
     <span class="marquee-item">桌球用品</span>
     <span class="marquee-item">羽球拍</span>
     <span class="marquee-item">球類運動</span>
-    <span class="marquee-item">跑步田徑</span>
+    <span class="marquee-item">慢跑鞋&路跑鞋</span>
     <span class="marquee-item">健身器材</span>
     <span class="marquee-item">棒壘球專區</span>
     <span class="marquee-item">桌球用品</span>
     <span class="marquee-item">羽球拍</span>
     <span class="marquee-item">球類運動</span>
-    <span class="marquee-item">跑步田徑</span>
+    <span class="marquee-item">慢跑鞋&路跑鞋</span>
     <span class="marquee-item">健身器材</span>
   </div>
 </div>
@@ -651,10 +651,10 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
       <div class="cat-info"><div class="cat-name">球類運動</div><div class="cat-count" id="cat-count-球類運動">計算中...</div></div>
       <div class="cat-arrow">→</div>
     </div>
-    <div class="cat-card" onclick="scrollToCat('跑步田徑')">
+    <div class="cat-card" onclick="scrollToCat('慢跑鞋&路跑鞋')">
       <div class="cat-bg"></div>
       <div class="cat-icon">🏃</div>
-      <div class="cat-info"><div class="cat-name">跑步 & 田徑</div><div class="cat-count" id="cat-count-跑步田徑">計算中...</div></div>
+      <div class="cat-info"><div class="cat-name">慢跑鞋 & 路跑鞋</div><div class="cat-count" id="cat-count-慢跑鞋&路跑鞋">計算中...</div></div>
       <div class="cat-arrow">→</div>
     </div>
     <div class="cat-card" onclick="scrollToCat('健身器材')">
@@ -678,7 +678,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
   <button class="cat-nav-btn" onclick="scrollToCat('桌球')">🏓 桌球</button>
   <button class="cat-nav-btn" onclick="scrollToCat('羽球')">🏸 羽球</button>
   <button class="cat-nav-btn" onclick="scrollToCat('球類運動')">🏀 球類</button>
-  <button class="cat-nav-btn" onclick="scrollToCat('跑步田徑')">🏃 跑步</button>
+  <button class="cat-nav-btn" onclick="scrollToCat('慢跑鞋&路跑鞋')">🏃 慢跑鞋</button>
   <button class="cat-nav-btn" onclick="scrollToCat('健身器材')">🏋️ 健身</button>
   <button class="cat-nav-btn" onclick="scrollToCat('出清商品')">🏷️ 出清</button>
 </div>
@@ -718,7 +718,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
   <div class="footer-grid">
     <div class="footer-brand">
       <span class="nav-logo">球友<span style="color:var(--red)">.</span>體育</span>
-      <p>四十年在地老店，專業體育用品一站購足。棒壘球、桌球、羽球、田徑、健身，各類裝備齊全，實體、網路都找得到我們。</p>
+      <p>四十年在地老店，專業體育用品一站購足。棒壘球、桌球、羽球、路跑、健身，各類裝備齊全，實體、網路都找得到我們。</p>
     </div>
     <div class="footer-col">
       <h4>商品分類</h4>
@@ -726,7 +726,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
       <a href="#" onclick="scrollToCat('桌球');return false;">桌球用品</a>
       <a href="#" onclick="scrollToCat('羽球');return false;">羽球拍</a>
       <a href="#" onclick="scrollToCat('球類運動');return false;">球類運動</a>
-      <a href="#" onclick="scrollToCat('跑步田徑');return false;">跑步田徑</a>
+      <a href="#" onclick="scrollToCat('慢跑鞋&路跑鞋');return false;">慢跑鞋&路跑鞋</a>
       <a href="#" onclick="scrollToCat('健身器材');return false;">健身器材</a>
     </div>
     <div class="footer-col">
@@ -833,7 +833,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
               <label>分類 *</label>
               <select id="pf-cat">
                 <option>棒壘球</option><option>桌球</option><option>羽球</option>
-                <option>球類運動</option><option>跑步田徑</option><option>健身器材</option><option>出清商品</option>
+                <option>球類運動</option><option>慢跑鞋&路跑鞋</option><option>健身器材</option><option>出清商品</option>
               </select>
             </div>
             <div class="form-group">
@@ -946,14 +946,14 @@ async function sbFetch(path, options={}) {
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
-const CATEGORIES = ['棒壘球','桌球','羽球','球類運動','跑步田徑','健身器材','出清商品'];
-const CAT_ICONS  = {'棒壘球':'⚾','桌球':'🏓','羽球':'🏸','球類運動':'🏀','跑步田徑':'🏃','健身器材':'🏋️','出清商品':'🏷️'};
+const CATEGORIES = ['棒壘球','桌球','羽球','球類運動','慢跑鞋&路跑鞋','健身器材','出清商品'];
+const CAT_ICONS  = {'棒壘球':'⚾','桌球':'🏓','羽球':'🏸','球類運動':'🏀','慢跑鞋&路跑鞋':'🏃','健身器材':'🏋️','出清商品':'🏷️'};
 const CAT_GRADIENTS = {
   '棒壘球':'linear-gradient(135deg,#1a1a2e,#b31f15)',
   '桌球':'linear-gradient(135deg,#0f2027,#2c5364)',
   '羽球':'linear-gradient(135deg,#1a1a1a,#4a4a4a)',
   '球類運動':'linear-gradient(135deg,#1c0a00,#3d1f00)',
-  '跑步田徑':'linear-gradient(135deg,#001a0d,#003318)',
+  '慢跑鞋&路跑鞋':'linear-gradient(135deg,#001a0d,#003318)',
   '健身器材':'linear-gradient(135deg,#1a001a,#3d003d)',
   '出清商品':'linear-gradient(135deg,#1a1000,#b31f15)',
 };
@@ -1155,31 +1155,83 @@ function changeDetailQty(delta) {
   if (!p) return;
   detailQty = Math.max(1, Math.min(p.stock, detailQty + delta));
   document.getElementById('detailQtyNum').textContent = detailQty;
+
+  // 有尺寸的商品：數量變了要重新檢查按鈕狀態
+  const sizes = p.sizes || [];
+  if (sizes.length > 0) {
+    const selected = [...document.querySelectorAll('.size-btn.active')];
+    // 如果已選尺寸數超過新數量，移除多的
+    while (selected.length > detailQty) {
+      selected.pop().classList.remove('active');
+    }
+    const nowSelected = [...document.querySelectorAll('.size-btn.active')];
+    const label = document.getElementById('detailSizeSelected');
+    if (label) label.textContent = nowSelected.length > 0 ? nowSelected.map(b=>b.textContent.trim()).join('、') + ' cm' : '— 請選擇';
+    const addBtn = document.getElementById('detailAddBtn');
+    if (addBtn) {
+      const ready = nowSelected.length === detailQty;
+      addBtn.disabled = !ready;
+      addBtn.style.opacity = ready ? '' : '0.35';
+      addBtn.style.cursor = ready ? '' : 'not-allowed';
+    }
+  }
 }
 
 function selectSize(s) {
-  document.querySelectorAll('.size-btn').forEach(b => b.classList.toggle('active', b.textContent === s));
+  const qty = detailQty;
+  const activeBtns = [...document.querySelectorAll('.size-btn.active')];
+  const btn = [...document.querySelectorAll('.size-btn')].find(b => b.textContent.trim() === s);
+  if (!btn) return;
+
+  if (btn.classList.contains('active')) {
+    // 已選的再點一次 → 取消
+    btn.classList.remove('active');
+  } else {
+    if (activeBtns.length >= qty) {
+      // 超過數量限制 → 移除最早選的，加新的
+      activeBtns[0].classList.remove('active');
+    }
+    btn.classList.add('active');
+  }
+
+  // 更新標示文字
+  const selected = [...document.querySelectorAll('.size-btn.active')].map(b => b.textContent.trim());
   const label = document.getElementById('detailSizeSelected');
-  if (label) label.textContent = s + ' cm';
-  // 亮起加入購物車按鈕
+  if (label) label.textContent = selected.length > 0 ? selected.join('、') + ' cm' : '— 請選擇';
+
+  // 選了尺寸且數量符合才亮按鈕
   const addBtn = document.getElementById('detailAddBtn');
   if (addBtn) {
-    addBtn.disabled = false;
-    addBtn.style.opacity = '';
-    addBtn.style.cursor = '';
+    const ready = selected.length === qty;
+    addBtn.disabled = !ready;
+    addBtn.style.opacity = ready ? '' : '0.35';
+    addBtn.style.cursor = ready ? '' : 'not-allowed';
   }
 }
 
 function addDetailToCart() {
   const p = products.find(x => x.id === currentDetailId);
   if (!p) return;
-  const selectedBtn = document.querySelector('.size-btn.active');
-  const selectedSize = selectedBtn ? selectedBtn.textContent : null;
-  const cartKey = selectedSize ? `${p.id}_${selectedSize}` : `${p.id}`;
-  const displayName = selectedSize ? `${p.name}｜${selectedSize}cm` : p.name;
-  const existing = cart.find(x => x.cartKey === cartKey);
-  if (existing) { existing.qty += detailQty; }
-  else { cart.push({ cartKey, id:p.id, name:displayName, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:detailQty, size:selectedSize }); }
+
+  const sizes = p.sizes || [];
+  if (sizes.length > 0) {
+    // 每個選到的尺寸各加一筆
+    const selectedBtns = [...document.querySelectorAll('.size-btn.active')];
+    selectedBtns.forEach(btn => {
+      const s = btn.textContent.trim();
+      const cartKey = `${p.id}_${s}`;
+      const displayName = `${p.name}｜${s}cm`;
+      const existing = cart.find(x => x.cartKey === cartKey);
+      if (existing) existing.qty += 1;
+      else cart.push({ cartKey, id:p.id, name:displayName, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:1, size:s });
+    });
+  } else {
+    const cartKey = `${p.id}`;
+    const existing = cart.find(x => x.cartKey === cartKey);
+    if (existing) existing.qty += detailQty;
+    else cart.push({ cartKey, id:p.id, name:p.name, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:detailQty });
+  }
+
   renderCart();
   document.getElementById('cartSidebar').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
