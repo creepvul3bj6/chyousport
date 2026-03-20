@@ -177,6 +177,7 @@ nav {
 .size-btn:hover:not(.soldout) { border-color:var(--white); background:rgba(255,255,255,0.05); }
 .size-btn.active { background:var(--red); border-color:var(--red); color:var(--white); font-weight:600; }
 .size-btn.soldout { opacity:0.3; cursor:not-allowed; text-decoration:line-through; }
+.size-btn .size-name { display:block; font-size:0.9rem; }
 .size-btn .size-stock { font-size:0.62rem; color:var(--gray-light); display:block; margin-top:2px; }
 .size-btn.active .size-stock { color:rgba(255,255,255,0.7); }
 /* Admin size stock rows */
@@ -1138,8 +1139,8 @@ function showDetail(id) {
           ${sizeKeys.map(s => {
             const stock = parseInt(sizesObj[s]) || 0;
             const soldout = stock === 0;
-            return `<button class="size-btn${soldout?' soldout':''}" onclick="${soldout?'':"selectSize('" + s + "')"}" ${soldout?'disabled':''}>
-              ${s}
+            return `<button class="size-btn${soldout?' soldout':''}" data-size="${s}" onclick="${soldout?'':"selectSize('" + s + "')"}" ${soldout?'disabled':''}>
+              <span class="size-name">${s}</span>
               <span class="size-stock">${soldout?'售完':stock+'件'}</span>
             </button>`;
           }).join('')}
@@ -1209,7 +1210,7 @@ function changeDetailQty(delta) {
     }
     const nowSelected = [...document.querySelectorAll('.size-btn.active')];
     const label = document.getElementById('detailSizeSelected');
-    if (label) label.textContent = nowSelected.length > 0 ? nowSelected.map(b=>b.textContent.trim()).join('、') + ' cm' : '— 請選擇';
+    if (label) label.textContent = nowSelected.length > 0 ? nowSelected.map(b=>b.getAttribute('data-size')).join('、') + ' cm' : '— 請選擇';
     const addBtn = document.getElementById('detailAddBtn');
     if (addBtn) {
       const ready = nowSelected.length === detailQty;
@@ -1223,7 +1224,7 @@ function changeDetailQty(delta) {
 function selectSize(s) {
   const qty = detailQty;
   const activeBtns = [...document.querySelectorAll('.size-btn.active')];
-  const btn = [...document.querySelectorAll('.size-btn')].find(b => b.textContent.trim() === s);
+  const btn = document.querySelector(`.size-btn[data-size="${s}"]`);
   if (!btn) return;
 
   if (btn.classList.contains('active')) {
@@ -1238,7 +1239,7 @@ function selectSize(s) {
   }
 
   // 更新標示文字
-  const selected = [...document.querySelectorAll('.size-btn.active')].map(b => b.textContent.trim());
+  const selected = [...document.querySelectorAll('.size-btn.active')].map(b => b.getAttribute('data-size'));
   const label = document.getElementById('detailSizeSelected');
   if (label) label.textContent = selected.length > 0 ? selected.join('、') + ' cm' : '— 請選擇';
 
