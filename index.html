@@ -947,7 +947,7 @@ footer { background:var(--gray); padding:4rem 5rem 2rem; border-top:1px solid va
 // Key 已移至 Netlify 環境變數，原始碼裡不會出現任何金鑰
 
 async function sbFetch(path, options={}) {
-  const res = await fetch('/.netlify/functions/supabase-proxy', {
+  const res = await fetch('/functions/supabase-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1531,7 +1531,7 @@ async function uploadImageToStorage(file, slot) {
     reader.readAsDataURL(file);
   });
 
-  const res = await fetch('/.netlify/functions/upload-image', {
+  const res = await fetch('/functions/upload-image', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename, base64, contentType: file.type }),
@@ -1552,7 +1552,7 @@ async function doLogin() {
   if (!u || !p) { errEl.classList.add('show'); return; }
   btn.textContent = '驗證中...'; btn.disabled = true;
   try {
-    const res = await fetch('/.netlify/functions/admin-login', {
+    const res = await fetch('/functions/admin-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: u, password: p }),
