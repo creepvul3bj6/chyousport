@@ -5,11 +5,13 @@ const CORS = {
   'Content-Type': 'application/json',
 };
 
-export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: CORS });
-}
-
-export async function onRequestPost(context) {
+export async function onRequest(context) {
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS });
+  }
+  if (context.request.method !== 'POST') {
+    return new Response('Method Not Allowed', { status: 405, headers: CORS });
+  }
   const { SUPABASE_URL, SUPABASE_KEY } = context.env;
   try {
     const { username, password } = await context.request.json();
