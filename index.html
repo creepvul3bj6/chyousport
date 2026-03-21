@@ -1201,23 +1201,27 @@ function switchDetailImg(idx) {
 function changeDetailQty(delta) {
   const p = products.find(x => x.id === currentDetailId);
   if (!p) return;
-  detailQty = Math.max(1, Math.min(p.stock, detailQty + delta));
+  const sizesObj2 = p.sizes || {};
+  const hasSizes = Object.keys(sizesObj2).length > 0;
+
+  if (hasSizes) {
+    // 有尺寸：數量上限為目前選中尺寸的庫存，沒選就限1
+    const selectedBtn = document.querySelector('.size-btn.active');
+    const selectedSize = selectedBtn ? selectedBtn.getAttribute('data-size') : null;
+    const maxQty = selectedSize ? (parseInt(sizesObj2[selectedSize]) || 1) : 1;
+    detailQty = Math.max(1, Math.min(maxQty, detailQty + delta));
+  } else {
+    detailQty = Math.max(1, Math.min(p.stock, detailQty + delta));
+  }
   document.getElementById('detailQtyNum').textContent = detailQty;
 
-  // 有尺寸的商品：數量變了要重新檢查按鈕狀態
-  const sizesObj2 = p.sizes || {};
-  if (Object.keys(sizesObj2).length > 0) {
-    const selected = [...document.querySelectorAll('.size-btn.active')];
-    // 如果已選尺寸數超過新數量，移除多的
-    while (selected.length > detailQty) {
-      selected.pop().classList.remove('active');
-    }
+  if (hasSizes) {
     const nowSelected = [...document.querySelectorAll('.size-btn.active')];
     const label = document.getElementById('detailSizeSelected');
     if (label) label.textContent = nowSelected.length > 0 ? nowSelected.map(b=>b.getAttribute('data-size')).join('、') + ' cm' : '— 請選擇';
     const addBtn = document.getElementById('detailAddBtn');
     if (addBtn) {
-      const ready = nowSelected.length === detailQty;
+      const ready = nowSelected.length > 0;
       addBtn.disabled = !ready;
       addBtn.style.opacity = ready ? '' : '0.35';
       addBtn.style.cursor = ready ? '' : 'not-allowed';
@@ -1226,34 +1230,36 @@ function changeDetailQty(delta) {
 }
 
 function selectSize(s) {
-  const qty = detailQty;
-  const activeBtns = [...document.querySelectorAll('.size-btn.active')];
+  const p = products.find(x => x.id === currentDetailId);
+  if (!p) return;
+  const sizesObj = p.sizes || {};
   const btn = document.querySelector(`.size-btn[data-size="${s}"]`);
   if (!btn) return;
 
-  if (btn.classList.contains('active')) {
-    // 已選的再點一次 → 取消
-    btn.classList.remove('active');
-  } else {
-    if (activeBtns.length >= qty) {
-      // 超過數量限制 → 移除最早選的，加新的
-      activeBtns[0].classList.remove('active');
-    }
+  // 取消其他已選的，改選這個（一次只能選一個尺寸）
+  document.querySelectorAll('.size-btn.active').forEach(b => b.classList.remove('active'));
+  if (!btn.classList.contains('active')) {
     btn.classList.add('active');
   }
 
-  // 更新標示文字
-  const selected = [...document.querySelectorAll('.size-btn.active')].map(b => b.getAttribute('data-size'));
-  const label = document.getElementById('detailSizeSelected');
-  if (label) label.textContent = selected.length > 0 ? selected.join('、') + ' cm' : '— 請選擇';
+  const selectedBtn = document.querySelector('.size-btn.active');
+  const selectedSize = selectedBtn ? selectedBtn.getAttribute('data-size') : null;
 
-  // 選了尺寸且數量符合才亮按鈕
+  // 重設數量為1，上限為該尺寸庫存
+  const maxQty = selectedSize ? (parseInt(sizesObj[selectedSize]) || 1) : 1;
+  detailQty = 1;
+  document.getElementById('detailQtyNum').textContent = 1;
+
+  // 更新標示文字
+  const label = document.getElementById('detailSizeSelected');
+  if (label) label.textContent = selectedSize ? selectedSize + ' cm' : '— 請選擇';
+
+  // 亮按鈕
   const addBtn = document.getElementById('detailAddBtn');
   if (addBtn) {
-    const ready = selected.length === qty;
-    addBtn.disabled = !ready;
-    addBtn.style.opacity = ready ? '' : '0.35';
-    addBtn.style.cursor = ready ? '' : 'not-allowed';
+    addBtn.disabled = !selectedSize;
+    addBtn.style.opacity = selectedSize ? '' : '0.35';
+    addBtn.style.cursor = selectedSize ? '' : 'not-allowed';
   }
 }
 
@@ -1263,15 +1269,18 @@ function addDetailToCart() {
 
   const sizesObj3 = p.sizes || {};
   if (Object.keys(sizesObj3).length > 0) {
-    const selectedBtns = [...document.querySelectorAll('.size-btn.active')];
-    selectedBtns.forEach(btn => {
-      const s = btn.textContent.trim();
-      const cartKey = `${p.id}_${s}`;
-      const displayName = `${p.name}｜${s}cm`;
-      const existing = cart.find(x => x.cartKey === cartKey);
-      if (existing) existing.qty += 1;
-      else cart.push({ cartKey, id:p.id, name:displayName, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:1, size:s });
-    });
+    const selectedBtn = document.querySelector('.size-btn.active');
+    if (!selectedBtn) return;
+    const s = selectedBtn.getAttribute('data-size');
+    const cartKey = `${p.id}_${s}`;
+    const displayName = `${p.name}｜${s}cm`;
+    const sizeMaxQty = parseInt(sizesObj3[s]) || 1;
+    const existing = cart.find(x => x.cartKey === cartKey);
+    if (existing) {
+      existing.qty = Math.min(sizeMaxQty, existing.qty + detailQty);
+    } else {
+      cart.push({ cartKey, id:p.id, name:displayName, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:Math.min(sizeMaxQty, detailQty), size:s, sizeMaxQty });
+    }
   } else {
     const cartKey = `${p.id}`;
     const existing = cart.find(x => x.cartKey === cartKey);
@@ -1344,7 +1353,8 @@ function renderCart() {
 function changeQty(cartKey, delta) {
   const item = cart.find(x => (x.cartKey||String(x.id)) === String(cartKey));
   if (!item) return;
-  item.qty += delta;
+  const maxQty = item.sizeMaxQty || item.stock || 9999;
+  item.qty = Math.min(maxQty, Math.max(0, item.qty + delta));
   if (item.qty <= 0) cart = cart.filter(x => (x.cartKey||String(x.id)) !== String(cartKey));
   renderCart();
 }
