@@ -1,25 +1,41 @@
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://chyousport.pages.dev',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Content-Type': 'application/json',
 };
 
+const ALLOWED = ['https://chyousport.pages.dev'];
+
+function checkOrigin(request) {
+  const origin = request.headers.get('Origin') || '';
+  const referer = request.headers.get('Referer') || '';
+  return ALLOWED.some(a => origin.startsWith(a) || referer.startsWith(a));
+}
+
 export async function onRequest(context) {
-  if (context.request.method === 'OPTIONS') {
+  const { request } = context;
+
+  if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS });
   }
-  const { SUPABASE_URL, SUPABASE_KEY } = context.env;
+  if (!checkOrigin(request)) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: CORS });
+  }
+
+  const SUPABASE_URL = context.env.SUPABASE_URL;
+  const SERVICE_KEY = context.env.SERVICE_KEY;
+
   try {
-    const { filename, base64, contentType } = await context.request.json();
+    const { filename, base64, contentType } = await request.json();
     const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
     const res = await fetch(
       SUPABASE_URL + '/storage/v1/object/product-images/' + filename,
       {
         method: 'POST',
         headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'apikey': SERVICE_KEY,
+          'Authorization': 'Bearer ' + SERVICE_KEY,
           'Content-Type': contentType,
           'Cache-Control': '3600',
         },
