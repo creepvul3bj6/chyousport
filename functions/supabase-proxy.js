@@ -22,7 +22,7 @@ export async function onRequest(context) {
   try {
     const { path, method, body, prefer } = await request.json();
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path.replace(/^\//, '')}`, {
       method: method || 'GET',
       headers: {
         'apikey': SUPABASE_KEY,
