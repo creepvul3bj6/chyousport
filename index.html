@@ -1333,7 +1333,10 @@ function renderProductCard(p) {
         <div class="product-footer">${priceHtml}</div>
         <div class="product-btns">
           <button class="btn-detail" onclick="showDetail(${p.id})">查看詳情</button>
-          <button class="btn-add" onclick="addToCart(${p.id})">加入購物車</button>
+          ${Object.keys(p.sizes||{}).length > 0
+            ? `<button class="btn-add" onclick="showDetail(${p.id})">選擇尺寸</button>`
+            : `<button class="btn-add" onclick="addToCart(${p.id})">加入購物車</button>`
+          }
         </div>
       </div>
     </div>
