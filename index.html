@@ -1285,6 +1285,7 @@ let pendingFiles = [null,null,null,null];
 let currentDetailId = null;
 let detailQty = 1;
 let detailBackCat = null;
+let detailBackScroll = 0;
 const SELL_SHIP_URL = 'https://www.seven-eleven.com.tw/sellShip/index.aspx';
 
 function parseSizes(raw) {
@@ -1403,6 +1404,7 @@ function showDetail(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   currentDetailId = id; detailQty = 1; detailBackCat = p.cat;
+  detailBackScroll = window.scrollY;
   document.getElementById('detailCat').textContent = p.cat;
   document.getElementById('detailName').textContent = p.name;
   document.getElementById('detailDesc').textContent = p.desc;
@@ -1459,7 +1461,7 @@ function showDetail(id) {
     ).join('');
   }
   showPage('detail');
-  history.pushState({ page: 'detail', backCat: p.cat }, '', '');
+  history.pushState({ page: 'detail', backCat: p.cat, backScroll: detailBackScroll }, '', '');
 }
 
 function switchDetailImg(idx) {
@@ -1532,10 +1534,9 @@ function addDetailToCart() {
 
 function goBackFromDetail() {
   showPage('home');
-  if (detailBackCat) setTimeout(() => {
-    const el = document.getElementById('cat-section-' + detailBackCat);
-    if (el) el.scrollIntoView({behavior:'smooth'});
-  }, 120);
+  setTimeout(() => {
+    window.scrollTo({ top: detailBackScroll || 0, behavior: 'smooth' });
+  }, 80);
 }
 
 // ══════════════════════════════════════
@@ -2020,15 +2021,14 @@ renderCart();
 // ── 瀏覽器上一頁 & iOS 滑動返回 ──
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
-  // e.state 在 iOS 側滑時有時為 null，改用 detailBackCat 當保底
-  const backCat = (e.state && e.state.backCat) || detailBackCat;
+  const backScroll = (e.state && e.state.backScroll != null) ? e.state.backScroll : (detailBackScroll || 0);
   showPage('home');
-  if (backCat) {
-    setTimeout(() => {
-      const el = document.getElementById('cat-section-' + backCat);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
-  }
+  // 雙 rAF 確保 iOS 頁面渲染完成後再 scroll
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: backScroll, behavior: 'auto' });
+    });
+  });
 });
 </script>
 </body>
