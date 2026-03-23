@@ -1125,7 +1125,7 @@ footer {
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2024 球友體育用品社 版權所有</span>
+      <span class="footer-copy">© 2026 球友體育用品社 版權所有</span>
       <span class="footer-copy">四十年老店，值得信賴</span>
     </div>
   </footer>
@@ -1331,8 +1331,12 @@ function showPage(name) {
   window.scrollTo(0,0);
   if (name === 'admin') renderAdmin();
 }
+function showPageWithHistory(name) {
+  showPage(name);
+  history.pushState({ page: name }, '', '');
+}
 function scrollToCat(cat) {
-  showPage('home');
+  showPageWithHistory('home');
   setTimeout(() => {
     const el = document.getElementById('cat-section-' + cat);
     if (el) el.scrollIntoView({behavior:'smooth'});
@@ -1459,6 +1463,7 @@ function showDetail(id) {
     ).join('');
   }
   showPage('detail');
+  history.pushState({ page: 'detail', productId: id, backCat: p.cat }, '', '');
 }
 
 function switchDetailImg(idx) {
@@ -2015,6 +2020,21 @@ document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
 // ══════════════════════════════════════
 loadProducts();
 renderCart();
+
+// ── 瀏覽器上一頁 & iOS 滑動返回 ──
+history.replaceState({ page: 'home' }, '', '');
+window.addEventListener('popstate', function(e) {
+  const state = e.state;
+  if (!state) { showPage('home'); return; }
+  if (state.page === 'detail' && state.productId) {
+    detailBackCat = state.backCat || null;
+    showDetail(state.productId);
+    // 回來時不要再 pushState，避免無限堆疊
+    history.replaceState(state, '', '');
+  } else {
+    goBackFromDetail();
+  }
+});
 </script>
 </body>
 </html>
