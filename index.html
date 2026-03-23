@@ -1251,9 +1251,12 @@ footer {
 // SUPABASE PROXY
 // ══════════════════════════════════════
 async function sbFetch(path, options={}) {
+  const token = sessionStorage.getItem('adminToken');
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
   const res = await fetch('/supabase-proxy', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
       path,
       method: options.method || 'GET',
@@ -1756,9 +1759,13 @@ async function uploadImageToStorage(file, slot) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+  const token = sessionStorage.getItem('adminToken');
   const res = await fetch('/upload-image', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + (token || ''),
+    },
     body: JSON.stringify({ filename, base64, contentType: file.type }),
   });
   if (!res.ok) { const e = await res.text(); throw new Error(e); }
@@ -1782,7 +1789,8 @@ async function doLogin() {
       body: JSON.stringify({ username: u, password: p }),
     });
     const data = await res.json();
-    if (data.ok) {
+    if (data.ok && data.token) {
+      sessionStorage.setItem('adminToken', data.token);
       errEl.classList.remove('show');
       document.getElementById('adminLogin').style.display = 'none';
       document.getElementById('adminPanel').classList.add('show');
@@ -1792,6 +1800,7 @@ async function doLogin() {
   finally { btn.textContent = '登入'; btn.disabled = false; }
 }
 function doLogout() {
+  sessionStorage.removeItem('adminToken');
   document.getElementById('adminLogin').style.display = 'block';
   document.getElementById('adminPanel').classList.remove('show');
   document.getElementById('adminUser').value = '';
