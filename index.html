@@ -1326,10 +1326,10 @@ async function loadProducts() {
 // ══════════════════════════════════════
 // PAGE ROUTING
 // ══════════════════════════════════════
-function showPage(name) {
+function showPage(name, scrollTop) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  window.scrollTo(0,0);
+  window.scrollTo(0, scrollTop != null ? scrollTop : 0);
   if (name === 'admin') renderAdmin();
 }
 function scrollToCat(cat) {
@@ -1533,10 +1533,7 @@ function addDetailToCart() {
 }
 
 function goBackFromDetail() {
-  showPage('home');
-  setTimeout(() => {
-    window.scrollTo({ top: detailBackScroll || 0, behavior: 'smooth' });
-  }, 80);
+  showPage('home', detailBackScroll || 0);
 }
 
 // ══════════════════════════════════════
@@ -2022,8 +2019,8 @@ renderCart();
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
   const backScroll = (e.state && e.state.backScroll != null) ? e.state.backScroll : (detailBackScroll || 0);
-  showPage('home');
-  // 雙 rAF 確保 iOS 頁面渲染完成後再 scroll
+  // iOS 側滑需要雙 rAF，其他直接執行
+  showPage('home', 0);
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       window.scrollTo({ top: backScroll, behavior: 'auto' });
