@@ -2020,14 +2020,14 @@ renderCart();
 // ── 瀏覽器上一頁 & iOS 滑動返回 ──
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
-  const state = e.state;
-  const backCat = (state && state.backCat) ? state.backCat : detailBackCat;
+  // e.state 在 iOS 側滑時有時為 null，改用 detailBackCat 當保底
+  const backCat = (e.state && e.state.backCat) || detailBackCat;
   showPage('home');
   if (backCat) {
     setTimeout(() => {
       const el = document.getElementById('cat-section-' + backCat);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 120);
+    }, 200);
   }
 });
 </script>
