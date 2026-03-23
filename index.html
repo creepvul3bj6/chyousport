@@ -79,7 +79,6 @@ nav {
   border-radius:8px; width:180px; transition:all .2s; outline:none;
 }
 .nav-search-input:focus { border-color:var(--red); width:220px; background:#fff; }
-.nav-search-input::placeholder { color:var(--text3); }
 .nav-search-icon {
   position:absolute; right:0.6rem; font-size:0.85rem; pointer-events:none;
 }
@@ -771,6 +770,8 @@ footer {
   .hamburger { display:flex; }
   .desktop-only { display:none !important; }
   .mobile-only { display:block; }
+  .nav-search-input { width:120px; font-size:0.78rem; }
+  .nav-search-input:focus { width:150px; }
   .hero { grid-template-columns:1fr; min-height:auto; }
   .hero-left { padding:3.5rem 2rem 3rem; }
   .hero-right { display:none; }
@@ -796,6 +797,8 @@ footer {
 @media (max-width:480px) {
   nav { padding:0 1.2rem; height:60px; }
   .nav-links { top:60px; }
+  .nav-search-input { width:90px; font-size:0.75rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
+  .nav-search-input:focus { width:120px; }
   .hero { padding-top:60px; }
   .hero-left { padding:2.5rem 1.2rem 2rem; }
   .hero-btns { flex-direction:column; }
@@ -833,15 +836,15 @@ footer {
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('products-section').scrollIntoView({behavior:'smooth'}),100);return false;">商品</a></li>
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('policy').scrollIntoView({behavior:'smooth'}),100);return false;">購物保障</a></li>
     <li class="mobile-only"><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
-    <li style="position:relative; display:flex; align-items:center; padding:0 0.5rem;">
+  </ul>
+  <div class="nav-right">
+    <div style="position:relative;">
       <div class="nav-search-wrap" id="navSearchWrap">
         <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)">
         <span class="nav-search-icon">🔍</span>
       </div>
       <div class="search-dropdown" id="searchDropdown"></div>
-    </li>
-  </ul>
-  <div class="nav-right">
+    </div>
     <button class="admin-btn desktop-only" onclick="showPage('admin')">後台管理</button>
     <button class="cart-btn" onclick="toggleCart()">
       🛒 購物車 <span class="cart-count" id="cartCount">0</span>
