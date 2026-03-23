@@ -1326,10 +1326,10 @@ async function loadProducts() {
 // ══════════════════════════════════════
 // PAGE ROUTING
 // ══════════════════════════════════════
-function showPage(name, scrollTop) {
+function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  window.scrollTo(0, scrollTop != null ? scrollTop : 0);
+  window.scrollTo(0,0);
   if (name === 'admin') renderAdmin();
 }
 function scrollToCat(cat) {
@@ -1503,8 +1503,37 @@ function selectSize(s) {
   document.getElementById('detailQtyNum').textContent = 1;
   const label = document.getElementById('detailSizeSelected');
   if (label) label.textContent = selectedSize + ' cm';
+  updateAddBtnState();
+}
+
+function updateAddBtnState() {
+  const p = products.find(x => x.id === currentDetailId);
+  if (!p) return;
   const addBtn = document.getElementById('detailAddBtn');
-  if (addBtn) { addBtn.disabled = false; addBtn.style.opacity = ''; addBtn.style.cursor = ''; }
+  if (!addBtn) return;
+  const sizesObj = p.sizes||{};
+  const hasSizes = Object.keys(sizesObj).length > 0;
+  if (hasSizes) {
+    const selectedBtn = document.querySelector('.size-btn.active');
+    if (!selectedBtn) return;
+    const s = selectedBtn.getAttribute('data-size');
+    const cartKey = `${p.id}_${s}`;
+    const maxQty = parseInt(sizesObj[s])||1;
+    const inCart = (cart.find(x => x.cartKey === cartKey)||{}).qty || 0;
+    const full = inCart >= maxQty;
+    addBtn.disabled = full;
+    addBtn.style.opacity = full ? '0.4' : '';
+    addBtn.style.cursor = full ? 'not-allowed' : '';
+    addBtn.textContent = full ? '庫存已達上限' : '加入購物車';
+  } else {
+    const cartKey = `${p.id}`;
+    const inCart = (cart.find(x => x.cartKey === cartKey)||{}).qty || 0;
+    const full = inCart >= p.stock;
+    addBtn.disabled = full;
+    addBtn.style.opacity = full ? '0.4' : '';
+    addBtn.style.cursor = full ? 'not-allowed' : '';
+    addBtn.textContent = full ? '庫存已達上限' : '加入購物車';
+  }
 }
 
 function addDetailToCart() {
@@ -1528,12 +1557,16 @@ function addDetailToCart() {
     else cart.push({ cartKey, id:p.id, name:p.name, cat:p.cat, icon:p.icon, cover:p.imgs&&p.imgs[0]||null, price:p.sale||p.price, qty:detailQty });
   }
   renderCart();
+  updateAddBtnState();
   document.getElementById('cartSidebar').classList.add('open');
   document.getElementById('cartOverlay').classList.add('open');
 }
 
 function goBackFromDetail() {
-  showPage('home', detailBackScroll || 0);
+  showPage('home');
+  setTimeout(() => {
+    window.scrollTo({ top: detailBackScroll || 0, behavior: 'smooth' });
+  }, 80);
 }
 
 // ══════════════════════════════════════
@@ -2019,8 +2052,8 @@ renderCart();
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
   const backScroll = (e.state && e.state.backScroll != null) ? e.state.backScroll : (detailBackScroll || 0);
-  // iOS 側滑需要雙 rAF，其他直接執行
-  showPage('home', 0);
+  showPage('home');
+  // 雙 rAF 確保 iOS 頁面渲染完成後再 scroll
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       window.scrollTo({ top: backScroll, behavior: 'auto' });
