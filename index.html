@@ -146,6 +146,21 @@ nav {
   color:rgba(0,0,0,0.04); user-select:none; line-height:1;
   position:absolute;
 }
+.hero-brand-logos {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2.5rem; position:absolute; inset:0;
+  padding:3rem;
+}
+.hero-brand-item {
+  display:flex; align-items:center; justify-content:center;
+}
+.brand-img {
+  width:100%; max-width:320px; height:auto;
+  opacity:0.85;
+  mix-blend-mode: multiply;
+  transition:opacity .3s;
+}
+.brand-img:hover { opacity:1; }
 .hero-badge-wrap {
   position:absolute; bottom:2.5rem; right:2.5rem;
   display:flex; flex-direction:column; gap:0.8rem;
@@ -886,7 +901,14 @@ footer {
     </div>
     <div class="hero-right">
       <div class="hero-right-inner">
-        <div class="hero-bg-text">SPORT</div>
+        <div class="hero-brand-logos">
+          <div class="hero-brand-item">
+            <img src="MIZUNO_logo_svg.png" alt="Mizuno" class="brand-img">
+          </div>
+          <div class="hero-brand-item">
+            <img src="Asics_Logo_svg.png" alt="ASICS" class="brand-img">
+          </div>
+        </div>
         <div class="hero-badge-wrap">
           <div class="hero-badge">
             <div class="hero-badge-icon">🚚</div>
