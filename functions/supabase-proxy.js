@@ -1,7 +1,7 @@
 const CORS = {
   'Access-Control-Allow-Origin': 'https://chyousport.pages.dev',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Content-Type': 'application/json',
 };
 
@@ -11,6 +11,16 @@ function checkOrigin(request) {
   const origin = request.headers.get('Origin') || '';
   const referer = request.headers.get('Referer') || '';
   return ALLOWED.some(a => origin.startsWith(a) || referer.startsWith(a));
+}
+
+async function verifyToken(token, supabaseUrl, anonKey) {
+  const res = await fetch(supabaseUrl + '/auth/v1/user', {
+    headers: {
+      'apikey': anonKey,
+      'Authorization': 'Bearer ' + token,
+    },
+  });
+  return res.ok;
 }
 
 export async function onRequest(context) {
@@ -34,6 +44,20 @@ export async function onRequest(context) {
     const { path, method, body, prefer } = await request.json();
 
     const isWrite = method && ['POST','PATCH','PUT','DELETE'].includes(method.toUpperCase());
+
+    // 寫入操作必須驗證 token
+    if (isWrite) {
+      const auth = request.headers.get('Authorization') || '';
+      const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+      if (!token) {
+        return new Response(JSON.stringify({ error: '未授權' }), { status: 401, headers: CORS });
+      }
+      const valid = await verifyToken(token, SUPABASE_URL, ANON_KEY);
+      if (!valid) {
+        return new Response(JSON.stringify({ error: 'Token 無效或已過期' }), { status: 401, headers: CORS });
+      }
+    }
+
     const useKey = isWrite ? SERVICE_KEY : ANON_KEY;
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${path.replace(/^\//, '')}`, {

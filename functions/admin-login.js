@@ -31,19 +31,21 @@ export async function onRequest(context) {
 
   try {
     const { username, password } = await request.json();
-    const res = await fetch(
-      SUPABASE_URL + '/rest/v1/admin_users?select=id&username=eq.' +
-      encodeURIComponent(username) + '&password=eq.' + encodeURIComponent(password),
-      {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-        },
-      }
-    );
+    // 用 Supabase Auth 登入，username 欄位當作 email 使用
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: username, password }),
+    });
     const data = await res.json();
-    const ok = Array.isArray(data) && data.length > 0;
-    return new Response(JSON.stringify({ ok }), { headers: CORS });
+    if (!res.ok || !data.access_token) {
+      return new Response(JSON.stringify({ ok: false }), { headers: CORS });
+    }
+    // 回傳 token 給前端
+    return new Response(JSON.stringify({ ok: true, token: data.access_token }), { headers: CORS });
   } catch(e) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: CORS });
   }
