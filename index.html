@@ -68,6 +68,46 @@ nav {
   width:20px; height:20px; font-size:0.72rem;
   display:flex; align-items:center; justify-content:center; font-weight:700;
 }
+/* ── SEARCH ── */
+.nav-search-wrap {
+  position:relative; display:flex; align-items:center;
+}
+.nav-search-input {
+  font-family:'DM Sans',sans-serif; font-size:0.85rem;
+  background:var(--bg2); border:1.5px solid var(--border);
+  color:var(--text); padding:0.45rem 2.2rem 0.45rem 0.9rem;
+  border-radius:8px; width:180px; transition:all .2s; outline:none;
+}
+.nav-search-input:focus { border-color:var(--red); width:220px; background:#fff; }
+.nav-search-input::placeholder { color:var(--text3); }
+.nav-search-icon {
+  position:absolute; right:0.6rem; font-size:0.85rem; pointer-events:none;
+}
+.search-dropdown {
+  display:none; position:absolute; top:calc(100% + 8px); left:0;
+  width:300px; background:#fff; border:1px solid var(--border);
+  border-radius:12px; box-shadow:var(--shadow-lg); z-index:600;
+  max-height:360px; overflow-y:auto;
+}
+.search-dropdown.open { display:block; }
+.search-item {
+  display:flex; align-items:center; gap:0.9rem;
+  padding:0.8rem 1rem; cursor:pointer; transition:background .15s;
+  border-bottom:1px solid var(--border);
+}
+.search-item:last-child { border-bottom:none; }
+.search-item:hover { background:var(--bg2); }
+.search-item-img {
+  width:44px; height:44px; border-radius:8px; overflow:hidden;
+  background:var(--bg2); display:flex; align-items:center;
+  justify-content:center; font-size:1.4rem; flex-shrink:0;
+}
+.search-item-img img { width:100%; height:100%; object-fit:cover; }
+.search-item-cat { font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--red); margin-bottom:0.15rem; }
+.search-item-name { font-size:0.85rem; font-weight:600; color:var(--black); }
+.search-item-price { font-family:'Oswald',sans-serif; font-size:0.9rem; font-weight:600; color:var(--black); margin-left:auto; white-space:nowrap; }
+.search-empty { padding:1.5rem 1rem; text-align:center; color:var(--text3); font-size:0.85rem; }
+
 .admin-btn {
   font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:500;
   background:transparent; color:var(--text2);
@@ -793,6 +833,13 @@ footer {
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('products-section').scrollIntoView({behavior:'smooth'}),100);return false;">商品</a></li>
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('policy').scrollIntoView({behavior:'smooth'}),100);return false;">購物保障</a></li>
     <li class="mobile-only"><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
+    <li style="position:relative;">
+      <div class="nav-search-wrap" id="navSearchWrap">
+        <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)">
+        <span class="nav-search-icon">🔍</span>
+      </div>
+      <div class="search-dropdown" id="searchDropdown"></div>
+    </li>
   </ul>
   <div class="nav-right">
     <button class="admin-btn desktop-only" onclick="showPage('admin')">後台管理</button>
@@ -1885,6 +1932,54 @@ async function deleteProduct(id) {
     await sbFetch('products?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
     await loadProducts(); renderProductTable(); renderOverview();
   } catch(e) { alert('刪除失敗：' + e.message); }
+}
+
+// ══════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════
+function handleSearch(val) {
+  const drop = document.getElementById('searchDropdown');
+  const q = val.trim().toLowerCase();
+  if (!q) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
+  const results = products.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.cat.toLowerCase().includes(q) ||
+    (p.desc||'').toLowerCase().includes(q)
+  ).slice(0, 8);
+  if (results.length === 0) {
+    drop.innerHTML = `<div class="search-empty">找不到「${val}」相關商品</div>`;
+  } else {
+    const bgColors = {'棒壘球':'#fde8e8','桌球':'#e8f0fd','羽球':'#f0fde8','球類運動':'#fdf6e8','慢跑鞋&路跑鞋':'#e8fdf0','健身器材':'#f3e8fd','出清商品':'#fde8f0'};
+    drop.innerHTML = results.map(p => {
+      const img = p.imgs && p.imgs[0]
+        ? `<img src="${p.imgs[0]}" alt="">`
+        : `<span>${p.icon||'📦'}</span>`;
+      const price = p.sale ? `NT$${p.sale.toLocaleString()}` : `NT$${p.price.toLocaleString()}`;
+      return `
+        <div class="search-item" onclick="selectSearchResult(${p.id})">
+          <div class="search-item-img" style="background:${bgColors[p.cat]||'#f7f7f5'}">${img}</div>
+          <div style="flex:1;min-width:0">
+            <div class="search-item-cat">${p.cat}</div>
+            <div class="search-item-name">${p.name}</div>
+          </div>
+          <div class="search-item-price">${price}</div>
+        </div>
+      `;
+    }).join('');
+  }
+  drop.classList.add('open');
+}
+function selectSearchResult(id) {
+  document.getElementById('navSearchInput').value = '';
+  hideSearchDrop();
+  showDetail(id);
+}
+function showSearchDrop() {
+  const val = document.getElementById('navSearchInput').value;
+  if (val.trim()) document.getElementById('searchDropdown').classList.add('open');
+}
+function hideSearchDrop() {
+  document.getElementById('searchDropdown').classList.remove('open');
 }
 
 // ══════════════════════════════════════
