@@ -924,6 +924,7 @@ footer {
       <span class="marquee-item">慢跑鞋&路跑鞋</span>
       <span class="marquee-item">健身器材</span>
       <span class="marquee-item">出清商品</span>
+      <span class="marquee-item">運動配件</span>
       <span class="marquee-item">棒壘球專區</span>
       <span class="marquee-item">桌球用品</span>
       <span class="marquee-item">羽球拍</span>
@@ -931,6 +932,7 @@ footer {
       <span class="marquee-item">慢跑鞋&路跑鞋</span>
       <span class="marquee-item">健身器材</span>
       <span class="marquee-item">出清商品</span>
+      <span class="marquee-item">運動配件</span>
     </div>
   </div>
 
@@ -979,6 +981,12 @@ footer {
         <div class="cat-count" id="cat-count-健身器材">計算中...</div>
         <div class="cat-arrow">→</div>
       </div>
+      <div class="cat-card" onclick="scrollToCat('運動配件')">
+        <div class="cat-icon-wrap">🎽</div>
+        <div class="cat-name">運動配件</div>
+        <div class="cat-count" id="cat-count-運動配件">計算中...</div>
+        <div class="cat-arrow">→</div>
+      </div>
       <div class="cat-card" onclick="scrollToCat('出清商品')">
         <div class="cat-icon-wrap">🏷️</div>
         <div class="cat-name">出清商品</div>
@@ -997,6 +1005,7 @@ footer {
       <button class="cat-nav-btn" onclick="scrollToCat('球類運動')">🏀 球類</button>
       <button class="cat-nav-btn" onclick="scrollToCat('慢跑鞋&路跑鞋')">🏃 慢跑鞋</button>
       <button class="cat-nav-btn" onclick="scrollToCat('健身器材')">🏋️ 健身</button>
+      <button class="cat-nav-btn" onclick="scrollToCat('運動配件')">🎽 配件</button>
       <button class="cat-nav-btn" onclick="scrollToCat('出清商品')">🏷️ 出清</button>
     </div>
   </div>
@@ -1046,6 +1055,7 @@ footer {
         <a href="#" onclick="scrollToCat('球類運動');return false;">球類運動</a>
         <a href="#" onclick="scrollToCat('慢跑鞋&路跑鞋');return false;">慢跑鞋&路跑鞋</a>
         <a href="#" onclick="scrollToCat('健身器材');return false;">健身器材</a>
+        <a href="#" onclick="scrollToCat('運動配件');return false;">運動配件</a>
       </div>
       <div class="footer-col">
         <h4>購物資訊</h4>
@@ -1135,7 +1145,7 @@ footer {
           <h3 id="formTitle">新增商品</h3>
           <div class="admin-form-row">
             <div class="form-group"><label>商品名稱 *</label><input type="text" id="pf-name" placeholder="商品名稱"></div>
-            <div class="form-group"><label>分類 *</label><select id="pf-cat"><option>棒壘球</option><option>桌球</option><option>羽球</option><option>球類運動</option><option>慢跑鞋&路跑鞋</option><option>健身器材</option><option>出清商品</option></select></div>
+            <div class="form-group"><label>分類 *</label><select id="pf-cat"><option>棒壘球</option><option>桌球</option><option>羽球</option><option>球類運動</option><option>慢跑鞋&路跑鞋</option><option>健身器材</option><option>運動配件</option><option>出清商品</option></select></div>
             <div class="form-group"><label>備用圖示</label><input type="text" id="pf-icon" placeholder="⚾"></div>
           </div>
           <div class="admin-form-row four">
@@ -1206,11 +1216,11 @@ async function sbFetch(path, options={}) {
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
-const CATEGORIES = ['棒壘球','桌球','羽球','球類運動','慢跑鞋&路跑鞋','健身器材','出清商品'];
-const CAT_ICONS  = {'棒壘球':'⚾','桌球':'🏓','羽球':'🏸','球類運動':'🏀','慢跑鞋&路跑鞋':'🏃','健身器材':'🏋️','出清商品':'🏷️'};
+const CATEGORIES = ['棒壘球','桌球','羽球','球類運動','慢跑鞋&路跑鞋','健身器材','運動配件','出清商品'];
+const CAT_ICONS  = {'棒壘球':'⚾','桌球':'🏓','羽球':'🏸','球類運動':'🏀','慢跑鞋&路跑鞋':'🏃','健身器材':'🏋️','運動配件':'🎽','出清商品':'🏷️'};
 const CAT_COLORS = {
   '棒壘球':'#fde8e8','桌球':'#e8f0fd','羽球':'#f0fde8',
-  '球類運動':'#fdf6e8','慢跑鞋&路跑鞋':'#e8fdf0','健身器材':'#f3e8fd','出清商品':'#fde8f0',
+  '球類運動':'#fdf6e8','慢跑鞋&路跑鞋':'#e8fdf0','健身器材':'#f3e8fd','運動配件':'#e8fdfc','出清商品':'#fde8f0',
 };
 
 let products = [];
