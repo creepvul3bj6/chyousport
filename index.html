@@ -1331,12 +1331,8 @@ function showPage(name) {
   window.scrollTo(0,0);
   if (name === 'admin') renderAdmin();
 }
-function showPageWithHistory(name) {
-  showPage(name);
-  history.pushState({ page: name }, '', '');
-}
 function scrollToCat(cat) {
-  showPageWithHistory('home');
+  showPage('home');
   setTimeout(() => {
     const el = document.getElementById('cat-section-' + cat);
     if (el) el.scrollIntoView({behavior:'smooth'});
@@ -1463,7 +1459,7 @@ function showDetail(id) {
     ).join('');
   }
   showPage('detail');
-  history.pushState({ page: 'detail', productId: id, backCat: p.cat }, '', '');
+  history.pushState({ page: 'detail', backCat: p.cat }, '', '');
 }
 
 function switchDetailImg(idx) {
@@ -2025,14 +2021,13 @@ renderCart();
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
   const state = e.state;
-  if (!state) { showPage('home'); return; }
-  if (state.page === 'detail' && state.productId) {
-    detailBackCat = state.backCat || null;
-    showDetail(state.productId);
-    // 回來時不要再 pushState，避免無限堆疊
-    history.replaceState(state, '', '');
-  } else {
-    goBackFromDetail();
+  const backCat = (state && state.backCat) ? state.backCat : detailBackCat;
+  showPage('home');
+  if (backCat) {
+    setTimeout(() => {
+      const el = document.getElementById('cat-section-' + backCat);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 120);
   }
 });
 </script>
