@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>球友體育用品社</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚾</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Oswald:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -334,8 +335,8 @@ nav {
 .product-card:hover {
   box-shadow:var(--shadow-lg); border-color:transparent; transform:translateY(-4px);
 }
-.product-img { position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--bg2); }
-.product-cover { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+.product-img { position:relative; aspect-ratio:1; overflow:hidden; background:var(--bg2); }
+.product-cover { width:100%; height:100%; object-fit:contain; transition:transform .5s; background:var(--bg2); }
 .product-card:hover .product-cover { transform:scale(1.06); }
 .product-emoji-bg {
   width:100%; height:100%; display:flex; align-items:center; justify-content:center;
@@ -392,7 +393,7 @@ nav {
   aspect-ratio:1; background:var(--bg2); border-radius:16px;
   overflow:hidden; margin-bottom:0.8rem; border:1px solid var(--border);
 }
-.detail-main-img img { width:100%; height:100%; object-fit:cover; }
+.detail-main-img img { width:100%; height:100%; object-fit:contain; background:var(--bg2); }
 .detail-main-img .detail-emoji {
   width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:8rem;
 }
