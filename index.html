@@ -331,7 +331,6 @@ nav {
 .product-card {
   background:#fff; border:1px solid var(--border); border-radius:14px;
   overflow:hidden; cursor:pointer; transition:all .22s;
-  display:flex; flex-direction:column;
 }
 .product-card:hover {
   box-shadow:var(--shadow-lg); border-color:transparent; transform:translateY(-4px);
@@ -352,11 +351,11 @@ nav {
 .product-badge.hot { background:var(--red); color:#fff; }
 .product-badge.new { background:#ff6b35; color:#fff; }
 .product-badge.limited { background:var(--black); color:#fff; }
-.product-body { padding:1.2rem; display:flex; flex-direction:column; flex:1; }
+.product-body { padding:1.2rem; }
 .product-cat { font-size:0.7rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--red); margin-bottom:0.35rem; }
 .product-name { font-size:0.92rem; font-weight:600; color:var(--black); line-height:1.4; margin-bottom:0.4rem; }
-.product-desc { font-size:0.78rem; color:var(--text3); line-height:1.5; margin-bottom:1rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; max-height:3em; min-height:3em; }
-.product-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
+.product-desc { font-size:0.78rem; color:var(--text3); line-height:1.5; margin-bottom:1rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.3em; }
+.product-footer { display:flex; align-items:center; justify-content:space-between; }
 .product-price { font-family:'Oswald',sans-serif; font-size:1.25rem; font-weight:600; color:var(--black); }
 .product-price .orig { font-family:'DM Sans',sans-serif; font-size:0.75rem; color:var(--text3); text-decoration:line-through; display:block; margin-bottom:0.1rem; font-weight:400; }
 .product-price .sale-price { color:var(--red); }
@@ -892,17 +891,32 @@ footer {
       <span class="ship-total-label">訂單合計</span>
       <span class="ship-total-price" id="shipTotal">NT$0</span>
     </div>
-    <div class="ship-steps">
-      <div class="ship-steps-title">下單流程</div>
-      <div class="ship-step"><span class="ship-step-num">1</span>確認上方商品清單及尺寸正確</div>
-      <div class="ship-step"><span class="ship-step-num">2</span>點下方按鈕，系統自動帶入訂單</div>
-      <div class="ship-step"><span class="ship-step-num">3</span>填寫收件資料並選擇取貨超商</div>
-      <div class="ship-step"><span class="ship-step-num">4</span>完成付款即可等待取貨通知</div>
+
+    <!-- 買家資料 -->
+    <div style="display:grid;gap:0.8rem;margin-bottom:1.2rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+        <div>
+          <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">姓名 *</label>
+          <input id="buyerName" type="text" placeholder="收件人姓名" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">手機 *</label>
+          <input id="buyerPhone" type="tel" placeholder="09xxxxxxxx" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">Email *</label>
+        <input id="buyerEmail" type="email" placeholder="用於接收付款通知" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
     </div>
+
     <div class="ship-policy-note">
       <strong style="color:var(--red)">退換貨政策：</strong>商品須未拆封、未使用。非瑕疵品之退貨需求，依消保法7天鑑賞期辦理，需自行負擔運費。「改變心意」或「不喜歡」等個人因素，恕不受理退換。
     </div>
-    <button class="btn-go-ship" onclick="goToSellShip()">前往賣貨便下單 →</button>
+
+    <!-- 結帳按鈕 -->
+    <button class="btn-go-ship" id="checkoutBtn" onclick="startCheckout()">前往信用卡付款 →</button>
+    <div id="checkoutError" style="display:none;color:var(--red);font-size:.8rem;text-align:center;margin-top:.6rem;"></div>
   </div>
 </div>
 
@@ -1658,7 +1672,66 @@ function closeShipModal() {
   document.getElementById('shipOverlay').classList.remove('open');
   document.getElementById('shipModal').classList.remove('open');
 }
-function goToSellShip() { window.open(SELL_SHIP_URL, '_blank'); }
+// ══════════════════════════════════════
+// ECPAY CHECKOUT
+// ══════════════════════════════════════
+// ⚠️ 換成你的 Supabase 專案 URL
+const SUPABASE_FUNCTION_URL = 'https://qfwggbhqpyxrpyiotmlz.supabase.co/functions/v1/create-order';
+
+async function startCheckout() {
+  const name  = document.getElementById('buyerName').value.trim();
+  const phone = document.getElementById('buyerPhone').value.trim();
+  const email = document.getElementById('buyerEmail').value.trim();
+  const errEl = document.getElementById('checkoutError');
+  const btn   = document.getElementById('checkoutBtn');
+
+  // 基本驗證
+  if (!name || !phone || !email) {
+    errEl.textContent = '請填寫姓名、手機及 Email'; errEl.style.display = 'block'; return;
+  }
+  if (!/^09\d{8}$/.test(phone)) {
+    errEl.textContent = '手機格式錯誤，請輸入 09xxxxxxxx'; errEl.style.display = 'block'; return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Email 格式不正確'; errEl.style.display = 'block'; return;
+  }
+  errEl.style.display = 'none';
+
+  const items  = cart.map(i => ({ name: i.name, qty: i.qty, price: i.price }));
+  const amount = cart.reduce((a, b) => a + b.price * b.qty, 0);
+
+  btn.textContent = '處理中，請稍候…'; btn.disabled = true;
+
+  try {
+    const res = await fetch(SUPABASE_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, amount, buyerName: name, buyerPhone: phone, buyerEmail: email }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || '伺服器錯誤，請稍後再試');
+    }
+
+    // 後端回傳綠界參數 JSON，前端動態建 Form 提交
+    const data = await res.json();
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = data.action; // 由後端決定（測試或正式環境）
+    Object.entries(data.params).forEach(([k, v]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = k; input.value = v;
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit(); // 跳轉到綠界付款頁
+
+  } catch (e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+    btn.textContent = '前往信用卡付款 →'; btn.disabled = false;
+  }
+}
 
 // ══════════════════════════════════════
 // SIZE STOCK HELPERS
