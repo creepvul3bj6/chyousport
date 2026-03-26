@@ -1253,9 +1253,21 @@ footer {
         </div>
       </div>
       <div class="admin-section" id="tab-orders">
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem;">訂單列表（共 <span id="orderCount">0</span> 筆）</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);">訂單列表（共 <span id="orderCount">0</span> 筆）</div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <select id="orderFilter" onchange="renderOrderList()" style="font-size:.78rem;padding:.35rem .7rem;border:1.5px solid var(--border2);border-radius:7px;background:#fff;cursor:pointer;">
+              <option value="all">全部訂單</option>
+              <option value="pending">待付款</option>
+              <option value="paid_unshipped">已付款・未出貨</option>
+              <option value="shipped">已出貨</option>
+              <option value="failed">付款失敗</option>
+            </select>
+            <button onclick="loadOrders()" style="font-size:.75rem;padding:.35rem .9rem;border:1.5px solid var(--border2);border-radius:7px;background:#fff;cursor:pointer;">重新整理</button>
+          </div>
+        </div>
         <div id="orderList"></div>
-        <div id="noOrders" style="color:var(--text3);font-size:.88rem;padding:2rem 0;">尚無訂單資料</div>
+        <div id="noOrders" style="color:var(--text3);font-size:.88rem;padding:2rem 0;display:none;">尚無訂單資料</div>
       </div>
     </div>
   </div>
@@ -1890,25 +1902,27 @@ function switchTab(name) {
   document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'products') renderProductTable();
-  if (name === 'orders') renderOrderList();
+  if (name === 'orders') loadOrders();
   if (name === 'overview') renderOverview();
 }
-function renderAdmin() { renderOverview(); renderProductTable(); renderOrderList(); }
+function renderAdmin() { renderOverview(); renderProductTable(); loadOrders(); }
 function renderOverview() {
-  const totalRevenue = orders.reduce((a,b)=>a+b.total,0);
+  const totalRevenue = dbOrders.reduce((a,b)=>a+(b.amount||0),0);
   const stats = [
     { label:'商品數量', value: products.length + ' 件' },
-    { label:'訂單總數', value: orders.length + ' 筆' },
+    { label:'訂單總數', value: dbOrders.length + ' 筆' },
     { label:'總營業額', value: 'NT$' + totalRevenue.toLocaleString() },
-    { label:'待處理訂單', value: orders.filter(o=>o.status==='new').length + ' 筆' },
+    { label:'待處理訂單', value: dbOrders.filter(o=>o.payment_status==='paid'&&o.shipping_status==='not_shipped').length + ' 筆' },
   ];
   document.getElementById('statsGrid').innerHTML = stats.map(s =>
     `<div class="stat-card"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
   ).join('');
-  const recent = orders.slice(0,3);
+  const recent = dbOrders.slice(0,3);
+  const payLabel2  = { pending:'待付款', paid:'已付款', failed:'付款失敗' };
+  const payColor2  = { pending:'#f59e0b', paid:'#22c55e', failed:'#ef4444' };
   document.getElementById('recentOrders').innerHTML = recent.length === 0
     ? '<div style="color:var(--text3);font-size:.88rem;padding:1.5rem 0;">尚無訂單</div>'
-    : recent.map(o => renderOrderCard(o)).join('');
+    : recent.map(o => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border);"><div style="font-size:.82rem;font-family:'Oswald'">${o.merchant_trade_no}</div><div style="display:flex;gap:.5rem"><span style="font-size:.72rem;font-weight:700;padding:.15rem .6rem;border-radius:20px;background:${payColor2[o.payment_status]}20;color:${payColor2[o.payment_status]}">${payLabel2[o.payment_status]||o.payment_status}</span><span style="font-size:.82rem;font-weight:600">NT$${(o.amount||0).toLocaleString()}</span></div></div>`).join('');
 }
 function renderProductTable() {
   document.getElementById('productTableBody').innerHTML = products.map(p => `
@@ -1945,7 +1959,87 @@ function renderOrderCard(o) {
     </div>
   `;
 }
+// ══════════════════════════════════════
+// 訂單管理（Supabase）
+// ══════════════════════════════════════
+let dbOrders = [];
+
+async function loadOrders() {
+  try {
+    const rows = await sbFetch('orders?select=*&order=created_at.desc');
+    dbOrders = rows || [];
+    renderOrderList();
+    renderOverview();
+  } catch(e) {
+    console.error('載入訂單失敗', e);
+    dbOrders = [];
+  }
+}
+
+async function markShipped(merchantTradeNo) {
+  try {
+    await sbFetch('orders?merchant_trade_no=eq.' + merchantTradeNo, {
+      method: 'PATCH',
+      body: JSON.stringify({ shipping_status: 'shipped' }),
+      prefer: 'return=minimal',
+    });
+    await loadOrders();
+  } catch(e) {
+    alert('更新失敗：' + e.message);
+  }
+}
+
 function renderOrderList() {
+  const filter = document.getElementById('orderFilter')?.value || 'all';
+  let list = dbOrders;
+  if (filter === 'pending')        list = dbOrders.filter(o => o.payment_status === 'pending');
+  if (filter === 'paid_unshipped') list = dbOrders.filter(o => o.payment_status === 'paid' && o.shipping_status === 'not_shipped');
+  if (filter === 'shipped')        list = dbOrders.filter(o => o.shipping_status === 'shipped');
+  if (filter === 'failed')         list = dbOrders.filter(o => o.payment_status === 'failed');
+
+  document.getElementById('orderCount').textContent = list.length;
+  const el = document.getElementById('orderList');
+  const noEl = document.getElementById('noOrders');
+  if (list.length === 0) { el.innerHTML=''; noEl.style.display='block'; return; }
+  noEl.style.display='none';
+
+  const payLabel  = { pending:'待付款', paid:'已付款', failed:'付款失敗' };
+  const payColor  = { pending:'#f59e0b', paid:'#22c55e', failed:'#ef4444' };
+  const shipLabel = { not_shipped:'未出貨', shipped:'已出貨' };
+  const shipColor = { not_shipped:'#f59e0b', shipped:'#22c55e' };
+
+  el.innerHTML = list.map(o => {
+    const items = Array.isArray(o.items) ? o.items.map(i => `${i.name} ×${i.qty}`).join('、') : '—';
+    const date = o.created_at ? new Date(o.created_at).toLocaleString('zh-TW',{timeZone:'Asia/Taipei'}) : '—';
+    const canShip = o.payment_status === 'paid' && o.shipping_status === 'not_shipped';
+    return `
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+        <div>
+          <div style="font-size:.65rem;color:var(--text3);margin-bottom:.2rem;">訂單編號</div>
+          <div style="font-family:'Oswald';font-size:.95rem;font-weight:600;letter-spacing:.04em;">${o.merchant_trade_no}</div>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:.72rem;font-weight:700;padding:.2rem .7rem;border-radius:20px;background:${payColor[o.payment_status]}20;color:${payColor[o.payment_status]};">${payLabel[o.payment_status]||o.payment_status}</span>
+          <span style="font-size:.72rem;font-weight:700;padding:.2rem .7rem;border-radius:20px;background:${shipColor[o.shipping_status]}20;color:${shipColor[o.shipping_status]};">${shipLabel[o.shipping_status]||o.shipping_status}</span>
+          ${canShip ? `<button onclick="markShipped('${o.merchant_trade_no}')" style="font-size:.72rem;padding:.25rem .8rem;background:var(--red);color:#fff;border:none;border-radius:6px;cursor:pointer;">標記已出貨</button>` : ''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem .8rem;font-size:.82rem;margin-bottom:.7rem;">
+        <div><div style="font-size:.65rem;color:var(--text3);">買家</div>${o.buyer_name||'—'}</div>
+        <div><div style="font-size:.65rem;color:var(--text3);">手機</div>${o.buyer_phone||'—'}</div>
+        <div><div style="font-size:.65rem;color:var(--text3);">Email</div>${o.buyer_email||'—'}</div>
+        <div><div style="font-size:.65rem;color:var(--text3);">金額</div><strong style="font-family:'Oswald';">NT$${(o.amount||0).toLocaleString()}</strong></div>
+      </div>
+      <div style="font-size:.8rem;color:var(--text2);border-top:1px solid var(--border);padding-top:.6rem;margin-top:.2rem;">
+        <span style="color:var(--text3);">商品：</span>${items}
+      </div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:.4rem;">${date}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderOrderList_old() {
   document.getElementById('orderCount').textContent = orders.length;
   const el = document.getElementById('orderList');
   const noEl = document.getElementById('noOrders');
