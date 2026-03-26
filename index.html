@@ -898,16 +898,19 @@ footer {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
         <div>
           <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">姓名 *</label>
-          <input id="buyerName" type="text" placeholder="收件人姓名" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+          <input id="buyerName" type="text" placeholder="收件人姓名" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="validateField('name')">
+          <div id="errName" style="display:none;color:var(--red);font-size:.75rem;margin-top:.3rem;"></div>
         </div>
         <div>
           <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">手機 *</label>
-          <input id="buyerPhone" type="tel" placeholder="09xxxxxxxx" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+          <input id="buyerPhone" type="tel" placeholder="09xxxxxxxx" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="validateField('phone')">
+          <div id="errPhone" style="display:none;color:var(--red);font-size:.75rem;margin-top:.3rem;"></div>
         </div>
       </div>
       <div>
         <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">Email *</label>
-        <input id="buyerEmail" type="email" placeholder="用於接收付款通知" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        <input id="buyerEmail" type="email" placeholder="用於接收付款通知" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="validateField('email')">
+        <div id="errEmail" style="display:none;color:var(--red);font-size:.75rem;margin-top:.3rem;"></div>
       </div>
     </div>
 
@@ -1848,6 +1851,7 @@ function selectShipping(type) {
     }
   });
   const fee = getShippingFee(type);
+  const cartTotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
   const grand = cartTotal + fee;
 
   // 顯示運費列
@@ -1889,6 +1893,54 @@ function selectShipping(type) {
 // ⚠️ 換成你的 Supabase 專案 URL
 const SUPABASE_FUNCTION_URL = 'https://qfwggbhqpyxrpyiotmlz.supabase.co/functions/v1/create-order';
 
+function validateField(field) {
+  if (field === 'name') {
+    const val = document.getElementById('buyerName').value.trim();
+    const el  = document.getElementById('errName');
+    const inp = document.getElementById('buyerName');
+    if (!val) {
+      el.textContent = '請填寫姓名'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else if (!/^[一-龥a-zA-Z]{2,}/.test(val)) {
+      el.textContent = '姓名至少需 2 個中文字或英文字母'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else {
+      el.style.display = 'none';
+      inp.style.borderColor = '#22c55e';
+    }
+  }
+  if (field === 'phone') {
+    const val = document.getElementById('buyerPhone').value.trim();
+    const el  = document.getElementById('errPhone');
+    const inp = document.getElementById('buyerPhone');
+    if (!val) {
+      el.textContent = '請填寫手機號碼'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else if (!/^09\d{8}$/.test(val)) {
+      el.textContent = '格式錯誤，需為 09 開頭共 10 碼'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else {
+      el.style.display = 'none';
+      inp.style.borderColor = '#22c55e';
+    }
+  }
+  if (field === 'email') {
+    const val = document.getElementById('buyerEmail').value.trim();
+    const el  = document.getElementById('errEmail');
+    const inp = document.getElementById('buyerEmail');
+    if (!val) {
+      el.textContent = '請填寫 Email'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) {
+      el.textContent = 'Email 格式不正確（例：name@gmail.com）'; el.style.display = 'block';
+      inp.style.borderColor = 'var(--red)';
+    } else {
+      el.style.display = 'none';
+      inp.style.borderColor = '#22c55e';
+    }
+  }
+}
+
 async function startCheckout() {
   const name  = document.getElementById('buyerName').value.trim();
   const phone = document.getElementById('buyerPhone').value.trim();
@@ -1896,18 +1948,15 @@ async function startCheckout() {
   const errEl = document.getElementById('checkoutError');
   const btn   = document.getElementById('checkoutBtn');
 
-  // 基本驗證
-  if (!name || !phone || !email) {
-    errEl.textContent = '請填寫姓名、手機及 Email'; errEl.style.display = 'block'; return;
-  }
-  if (!/^[\u4e00-\u9fa5a-zA-Z]{2,}$/.test(name)) {
-    errEl.textContent = '姓名請輸入至少 2 個中文字或英文字母'; errEl.style.display = 'block'; return;
-  }
-  if (!/^09\d{8}$/.test(phone)) {
-    errEl.textContent = '手機格式錯誤，請輸入 09xxxxxxxx'; errEl.style.display = 'block'; return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-    errEl.textContent = 'Email 格式不正確（例：name@gmail.com）'; errEl.style.display = 'block'; return;
+  // 基本驗證 — 同時觸發每個欄位的即時錯誤提示
+  validateField('name');
+  validateField('phone');
+  validateField('email');
+  const nameOk  = /^[\u4e00-\u9fa5a-zA-Z]{2,}/.test(name);
+  const phoneOk = /^09\d{8}$/.test(phone);
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  if (!nameOk || !phoneOk || !emailOk) {
+    errEl.textContent = '請修正上方欄位錯誤後再送出'; errEl.style.display = 'block'; return;
   }
   errEl.style.display = 'none';
 
