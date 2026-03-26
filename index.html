@@ -2392,7 +2392,7 @@ function renderOrderCard(o) {
       <div class="order-items-list">商品：${items.map(i=>`${i.name}×${i.qty}`).join('、')}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;">
         <div style="font-size:.75rem;color:var(--text3);">${tradeDate}</div>
-        ${canShip ? `<button onclick="markShipped(${o.id})" style="font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:6px;border:none;background:var(--green);color:#fff;cursor:pointer;">✓ 標記已出貨</button>` : ''}
+        ${canShip ? `<button onclick="markShipped('${o.id}')" style="font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:6px;border:none;background:var(--green);color:#fff;cursor:pointer;">✓ 標記已出貨</button>` : ''}
       </div>
     </div>
   `;
