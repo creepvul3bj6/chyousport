@@ -1926,11 +1926,11 @@ function openStoreMap() {
   const subType = type === '711' ? 'UNIMART' : 'FAMI';
   const callbackURL = 'https://chyousport.pages.dev/store-callback';
 
-  // 用隱藏 form POST 到綠界地圖
+  // 同視窗跳轉：直接 POST 到綠界地圖，選完後 store-callback redirect 回首頁
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = LOGISTICS_MAP_URL;
-  form.target = '_blank'; // 新視窗開啟地圖
+  form.target = '_self'; // 同一個視窗
 
   const fields = {
     MerchantID: LOGISTICS_MERCHANT_ID,
@@ -1939,7 +1939,7 @@ function openStoreMap() {
     LogisticsSubType: subType,
     IsCollection: 'N',
     ServerReplyURL: callbackURL,
-    ExtraData: type, // 帶入是 711 還是 family，callback 用
+    ExtraData: type,
     Device: '0',
   };
 
@@ -1953,18 +1953,6 @@ function openStoreMap() {
 
   document.body.appendChild(form);
   form.submit();
-  document.body.removeChild(form);
-
-  // 監聽子視窗關閉後，檢查 localStorage 有沒有門市資訊
-  const timer = setInterval(() => {
-    const storeData = localStorage.getItem('ecpayStoreData');
-    if (storeData) {
-      localStorage.removeItem('ecpayStoreData');
-      const data = JSON.parse(storeData);
-      applyStoreData(data);
-      clearInterval(timer);
-    }
-  }, 500);
 }
 
 function applyStoreData(data) {
@@ -1992,17 +1980,10 @@ function applyStoreData(data) {
   if (storeName && storeType) {
     // 清除 URL 參數，避免重新整理重複觸發
     history.replaceState({}, '', location.pathname);
-    // 儲存到 localStorage 讓 openStoreMap 的 timer 讀取
-    localStorage.setItem('ecpayStoreData', JSON.stringify({
-      CVSStoreName: storeName,
-      CVSAddress: storeAddr || '',
-      CVSStoreID: storeId || '',
-    }));
-    // 自動選擇對應配送方式並填入
+    // 自動選擇對應配送方式並填入門市，打開結帳 modal
     setTimeout(() => {
       selectShipping(storeType);
       applyStoreData({ CVSStoreName: storeName, CVSAddress: storeAddr, CVSStoreID: storeId });
-      // 打開結帳 modal
       openShipModal();
     }, 300);
   }
