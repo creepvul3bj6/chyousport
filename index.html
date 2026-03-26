@@ -942,10 +942,26 @@ footer {
       </div>
     </div>
 
-    <!-- 地址欄位（超商取貨顯示門市名稱輸入，宅配顯示地址）-->
+    <!-- 地址欄位（超商取貨顯示門市選擇，宅配顯示地址）-->
     <div id="shippingAddressBlock" style="display:none;margin-bottom:1.2rem;">
       <label id="shippingAddressLabel" style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">門市名稱 *</label>
-      <input id="shippingAddress" type="text" placeholder="請填寫門市名稱（如：7-11 苗栗中山門市）" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      <!-- 超商選門市按鈕 -->
+      <div id="storePickerBlock" style="display:none;">
+        <div id="selectedStoreInfo" style="display:none;background:#f0fdf4;border:1.5px solid #22c55e;border-radius:8px;padding:.6rem .9rem;margin-bottom:.5rem;font-size:.85rem;">
+          <span style="color:#16a34a;font-weight:700;">✓ 已選擇門市：</span>
+          <span id="selectedStoreName" style="color:#15803d;font-weight:600;"></span><br>
+          <span id="selectedStoreAddr" style="color:#4b5563;font-size:.78rem;"></span>
+        </div>
+        <button type="button" id="pickStoreBtn" onclick="openStoreMap()" style="width:100%;background:#fff;border:1.5px solid var(--red);color:var(--red);padding:.6rem .9rem;font-size:.88rem;font-weight:700;border-radius:8px;cursor:pointer;transition:all .18s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='var(--red)'">
+          📍 選擇門市
+        </button>
+        <input type="hidden" id="shippingAddress" value="">
+        <input type="hidden" id="storeId" value="">
+      </div>
+      <!-- 宅配地址輸入 -->
+      <div id="homeAddressBlock" style="display:none;">
+        <input id="shippingAddress" type="text" placeholder="請填寫完整收件地址（縣市、區、路、號）" style="width:100%;background:#fff;border:1.5px solid var(--border);color:var(--text);padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
     </div>
 
     <!-- 運費小計 -->
@@ -1872,19 +1888,125 @@ function selectShipping(type) {
   // 地址欄位
   const addrBlock = document.getElementById('shippingAddressBlock');
   const addrLabel = document.getElementById('shippingAddressLabel');
-  const addrInput = document.getElementById('shippingAddress');
+  const storePickerBlock = document.getElementById('storePickerBlock');
+  const homeAddressBlock = document.getElementById('homeAddressBlock');
   if (type === 'store') {
     addrBlock.style.display = 'none';
+    storePickerBlock.style.display = 'none';
+    homeAddressBlock.style.display = 'none';
   } else if (type === 'home') {
     addrBlock.style.display = 'block';
     addrLabel.textContent = '收件地址 *';
-    addrInput.placeholder = '請填寫完整收件地址（縣市、區、路、號）';
+    storePickerBlock.style.display = 'none';
+    homeAddressBlock.style.display = 'block';
   } else {
     addrBlock.style.display = 'block';
-    addrLabel.textContent = '門市名稱 *';
-    addrInput.placeholder = type === '711' ? '請填寫 7-11 門市名稱（如：苗栗中山門市）' : '請填寫全家門市名稱（如：苗栗中正門市）';
+    addrLabel.textContent = '取貨門市 *';
+    storePickerBlock.style.display = 'block';
+    homeAddressBlock.style.display = 'none';
+    // 清除舊的門市選擇
+    document.getElementById('selectedStoreInfo').style.display = 'none';
+    document.getElementById('selectedStoreName').textContent = '';
+    document.getElementById('selectedStoreAddr').textContent = '';
+    document.getElementById('shippingAddress').value = '';
+    document.getElementById('storeId').value = '';
+    document.getElementById('pickStoreBtn').textContent = '📍 選擇門市';
   }
 }
+
+// ══════════════════════════════════════
+// 綠界電子地圖選門市
+// ══════════════════════════════════════
+const LOGISTICS_MERCHANT_ID = '2000132';
+const LOGISTICS_MAP_URL = 'https://logistics-stage.ecpay.com.tw/Express/map';
+// 正式環境改為：https://logistics.ecpay.com.tw/Express/map
+
+function openStoreMap() {
+  const type = selectedShipping; // '711' or 'family'
+  const subType = type === '711' ? 'UNIMART' : 'FAMI';
+  const callbackURL = 'https://chyousport.pages.dev/store-callback';
+
+  // 用隱藏 form POST 到綠界地圖
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = LOGISTICS_MAP_URL;
+  form.target = '_blank'; // 新視窗開啟地圖
+
+  const fields = {
+    MerchantID: LOGISTICS_MERCHANT_ID,
+    MerchantTradeNo: 'MAP' + Date.now().toString().slice(-12),
+    LogisticsType: 'CVS',
+    LogisticsSubType: subType,
+    IsCollection: 'N',
+    ServerReplyURL: callbackURL,
+    ExtraData: type, // 帶入是 711 還是 family，callback 用
+    Device: '0',
+  };
+
+  Object.entries(fields).forEach(([k, v]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = k;
+    input.value = v;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+
+  // 監聽子視窗關閉後，檢查 localStorage 有沒有門市資訊
+  const timer = setInterval(() => {
+    const storeData = localStorage.getItem('ecpayStoreData');
+    if (storeData) {
+      localStorage.removeItem('ecpayStoreData');
+      const data = JSON.parse(storeData);
+      applyStoreData(data);
+      clearInterval(timer);
+    }
+  }, 500);
+}
+
+function applyStoreData(data) {
+  const storeName = data.CVSStoreName || '';
+  const storeAddr = data.CVSAddress || '';
+  const storeId   = data.CVSStoreID || '';
+  const display   = storeName + (storeAddr ? '（' + storeAddr + '）' : '');
+
+  document.getElementById('selectedStoreName').textContent = storeName;
+  document.getElementById('selectedStoreAddr').textContent = storeAddr;
+  document.getElementById('selectedStoreInfo').style.display = 'block';
+  document.getElementById('shippingAddress').value = display;
+  document.getElementById('storeId').value = storeId;
+  document.getElementById('pickStoreBtn').textContent = '📍 重新選擇門市';
+}
+
+// 頁面載入時，如果 URL 有門市參數（從 store-callback redirect 回來）就自動填入
+(function checkStoreCallback() {
+  const params = new URLSearchParams(location.search);
+  const storeName = params.get('storeName');
+  const storeAddr = params.get('storeAddr');
+  const storeId   = params.get('storeId');
+  const storeType = params.get('storeType'); // '711' or 'family'
+
+  if (storeName && storeType) {
+    // 清除 URL 參數，避免重新整理重複觸發
+    history.replaceState({}, '', location.pathname);
+    // 儲存到 localStorage 讓 openStoreMap 的 timer 讀取
+    localStorage.setItem('ecpayStoreData', JSON.stringify({
+      CVSStoreName: storeName,
+      CVSAddress: storeAddr || '',
+      CVSStoreID: storeId || '',
+    }));
+    // 自動選擇對應配送方式並填入
+    setTimeout(() => {
+      selectShipping(storeType);
+      applyStoreData({ CVSStoreName: storeName, CVSAddress: storeAddr, CVSStoreID: storeId });
+      // 打開結帳 modal
+      openShipModal();
+    }, 300);
+  }
+})();
 
 // ══════════════════════════════════════
 // ECPAY CHECKOUT
