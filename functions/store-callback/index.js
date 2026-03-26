@@ -6,18 +6,19 @@ export async function onRequestPost(context) {
   const storeId   = formData.get('CVSStoreID') || '';
   const extraData = formData.get('ExtraData') || '';
 
-  const params = new URLSearchParams({ storeName, storeAddr, storeId, storeType: extraData });
-  const redirectURL = `https://chyousport.pages.dev/?${params.toString()}`;
+  // 用 JS 寫入 sessionStorage 再跳回首頁，避免 URL 參數丟失
+  const storeData = JSON.stringify({ storeName, storeAddr, storeId, storeType: extraData });
 
-  // 用 HTML 自動跳轉，避免 Cloudflare 截掉 query string
   const html = `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=${redirectURL}">
-  <script>window.location.replace('${redirectURL}');</script>
-</head>
-<body>跳轉中...</body>
+<head><meta charset="UTF-8"></head>
+<body>
+<script>
+  sessionStorage.setItem('pendingStoreData', '${storeData.replace(/'/g, "\\'")}');
+  window.location.replace('https://chyousport.pages.dev/');
+</script>
+跳轉中...
+</body>
 </html>`;
 
   return new Response(html, {
