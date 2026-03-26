@@ -6,10 +6,8 @@ export async function onRequestPost(context) {
   const storeId   = formData.get('CVSStoreID') || '';
   const extraData = formData.get('ExtraData') || '';
 
-  // 用 JSON.stringify 雙重編碼，避免中文或特殊字元破壞 JS 字串
-  const storeDataJson = JSON.stringify(
-    JSON.stringify({ storeName, storeAddr, storeId, storeType: extraData })
-  );
+  // 單層 JSON.stringify，直接嵌入 JS 物件字面值
+  const storeObj = JSON.stringify({ storeName, storeAddr, storeId, storeType: extraData });
 
   const html = `<!DOCTYPE html>
 <html>
@@ -18,12 +16,15 @@ export async function onRequestPost(context) {
 <p>跳轉中，請稍候...</p>
 <script>
   try {
-    var data = ${storeDataJson};
-    sessionStorage.setItem('pendingStoreData', data);
+    sessionStorage.setItem('pendingStoreData', ${JSON.stringify(storeObj)});
+    console.log('store saved:', sessionStorage.getItem('pendingStoreData'));
   } catch(e) {
     console.error('sessionStorage error:', e);
   }
-  window.location.replace('https://chyousport.pages.dev/');
+  // 確保 sessionStorage 寫完再跳
+  setTimeout(function() {
+    window.location.replace('https://chyousport.pages.dev/');
+  }, 100);
 </script>
 </body>
 </html>`;
