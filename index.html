@@ -1973,8 +1973,7 @@ function applyStoreData(data) {
 }
 
 // 頁面載入時，如果 URL 有門市參數（從 store-callback redirect 回來）就自動填入
-(function checkStoreCallback() {
-  // 讀 sessionStorage（由 store-callback function 寫入）
+function checkStoreCallback() {
   const raw = sessionStorage.getItem('pendingStoreData');
   if (!raw) return;
   sessionStorage.removeItem('pendingStoreData');
@@ -1996,14 +1995,20 @@ function applyStoreData(data) {
     sessionStorage.removeItem('cartBackup');
   }
 
-  // 自動選擇配送方式並填入門市，打開結帳 modal
   setTimeout(() => {
     renderCart();
     selectShipping(storeType);
     applyStoreData({ CVSStoreName: storeName, CVSAddress: storeAddr, CVSStoreID: storeId });
     openShipModal();
-  }, 300);
-})();
+  }, 400);
+}
+
+// DOM 載入完成後執行，確保所有函式都已定義
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkStoreCallback);
+} else {
+  checkStoreCallback();
+}
 
 // ══════════════════════════════════════
 // ECPAY CHECKOUT
