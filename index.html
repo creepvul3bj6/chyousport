@@ -1478,6 +1478,10 @@ function scrollToCat(cat) {
 // ══════════════════════════════════════
 // RENDER CATEGORIES
 // ══════════════════════════════════════
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible'); obs.unobserve(e.target);} });
+}, { threshold:0.06 });
+
 function renderAllCatSections() {
   const container = document.getElementById('allCatSections');
   container.innerHTML = CATEGORIES.map(cat => {
@@ -2457,12 +2461,6 @@ function closeMenu() {
 
 // ══════════════════════════════════════
 // SCROLL REVEAL
-// ══════════════════════════════════════
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible'); obs.unobserve(e.target);} });
-}, { threshold:0.06 });
-document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
-
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
