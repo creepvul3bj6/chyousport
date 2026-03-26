@@ -6,18 +6,25 @@ export async function onRequestPost(context) {
   const storeId   = formData.get('CVSStoreID') || '';
   const extraData = formData.get('ExtraData') || '';
 
-  // 用 JS 寫入 sessionStorage 再跳回首頁，避免 URL 參數丟失
-  const storeData = JSON.stringify({ storeName, storeAddr, storeId, storeType: extraData });
+  // 用 JSON.stringify 雙重編碼，避免中文或特殊字元破壞 JS 字串
+  const storeDataJson = JSON.stringify(
+    JSON.stringify({ storeName, storeAddr, storeId, storeType: extraData })
+  );
 
   const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
+<head><meta charset="UTF-8"><title>跳轉中</title></head>
 <body>
+<p>跳轉中，請稍候...</p>
 <script>
-  sessionStorage.setItem('pendingStoreData', '${storeData.replace(/'/g, "\\'")}');
+  try {
+    var data = ${storeDataJson};
+    sessionStorage.setItem('pendingStoreData', data);
+  } catch(e) {
+    console.error('sessionStorage error:', e);
+  }
   window.location.replace('https://chyousport.pages.dev/');
 </script>
-跳轉中...
 </body>
 </html>`;
 
