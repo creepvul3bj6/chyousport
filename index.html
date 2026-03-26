@@ -1398,6 +1398,9 @@ footer {
 </div>
 
 <script>
+// ── 最優先：在 history.replaceState 清掉 URL 之前，先把 query string 存起來 ──
+const _initParams = new URLSearchParams(window.location.search);
+
 // ══════════════════════════════════════
 // SUPABASE PROXY
 // ══════════════════════════════════════
@@ -1974,16 +1977,13 @@ function applyStoreData(data) {
 
 // 頁面載入時，如果 URL 有門市參數（從 store-callback redirect 回來）就自動填入
 function checkStoreCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const storeName = params.get('storeName') || '';
-  const storeAddr = params.get('storeAddr') || '';
-  const storeId   = params.get('storeId')   || '';
-  const storeType = params.get('storeType') || '';
+  // 用最頂端存好的 _initParams，不受 history.replaceState 影響
+  const storeName = _initParams.get('storeName') || '';
+  const storeAddr = _initParams.get('storeAddr') || '';
+  const storeId   = _initParams.get('storeId')   || '';
+  const storeType = _initParams.get('storeType') || '';
 
   if (!storeName || !storeType) return;
-
-  // 把 query string 從 URL 清掉，避免重新整理時重複觸發
-  history.replaceState({ page: 'home' }, '', '/');
 
   // 恢復購物車
   const cartBackup = sessionStorage.getItem('cartBackup');
