@@ -838,6 +838,7 @@ footer {
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('categories').scrollIntoView({behavior:'smooth'}),100);return false;">分類</a></li>
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('products-section').scrollIntoView({behavior:'smooth'}),100);return false;">商品</a></li>
     <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('policy').scrollIntoView({behavior:'smooth'}),100);return false;">購物保障</a></li>
+    <li><a href="#" onclick="closeMenu();showPage('order-query');return false;">訂單查詢</a></li>
     <li class="mobile-only"><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
   </ul>
   <div class="nav-right">
@@ -912,7 +913,8 @@ footer {
 
     <!-- 配送方式 -->
     <div style="margin-bottom:1.2rem;">
-      <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.6rem;">配送方式 *</label>
+      <label style="font-size:0.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">配送方式 *</label>
+      <div style="font-size:.72rem;color:var(--green);font-weight:600;margin-bottom:.6rem;">🎉 消費滿 NT$3,000 免運費</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.5rem;" id="shippingOptions">
         <label id="ship-opt-store" onclick="selectShipping('store')" style="border:1.5px solid var(--border);border-radius:8px;padding:.65rem .5rem;cursor:pointer;text-align:center;transition:all .18s;">
           <div style="font-size:1.1rem;margin-bottom:.2rem;">🏪</div>
@@ -922,17 +924,17 @@ footer {
         <label id="ship-opt-711" onclick="selectShipping('711')" style="border:1.5px solid var(--border);border-radius:8px;padding:.65rem .5rem;cursor:pointer;text-align:center;transition:all .18s;">
           <div style="font-size:1.1rem;margin-bottom:.2rem;">🏪</div>
           <div style="font-size:.72rem;font-weight:700;">7-11 取貨</div>
-          <div style="font-size:.68rem;color:var(--text3);">+NT$60</div>
+          <div id="ship-fee-711" style="font-size:.68rem;color:var(--text3);">+NT$60</div>
         </label>
         <label id="ship-opt-family" onclick="selectShipping('family')" style="border:1.5px solid var(--border);border-radius:8px;padding:.65rem .5rem;cursor:pointer;text-align:center;transition:all .18s;">
           <div style="font-size:1.1rem;margin-bottom:.2rem;">🏪</div>
           <div style="font-size:.72rem;font-weight:700;">全家取貨</div>
-          <div style="font-size:.68rem;color:var(--text3);">+NT$60</div>
+          <div id="ship-fee-family" style="font-size:.68rem;color:var(--text3);">+NT$60</div>
         </label>
         <label id="ship-opt-home" onclick="selectShipping('home')" style="border:1.5px solid var(--border);border-radius:8px;padding:.65rem .5rem;cursor:pointer;text-align:center;transition:all .18s;">
           <div style="font-size:1.1rem;margin-bottom:.2rem;">🚚</div>
           <div style="font-size:.72rem;font-weight:700;">宅配到府</div>
-          <div style="font-size:.68rem;color:var(--text3);">+NT$100</div>
+          <div id="ship-fee-home" style="font-size:.68rem;color:var(--text3);">+NT$100</div>
         </label>
       </div>
     </div>
@@ -1220,6 +1222,75 @@ footer {
 </div>
 
 <!-- ═══ ADMIN ═══ -->
+<div class="page" id="page-order-query">
+  <div style="min-height:100vh;padding-top:68px;background:var(--bg2);display:flex;align-items:flex-start;justify-content:center;">
+    <div style="width:100%;max-width:520px;padding:3rem 1.5rem;">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">📦</div>
+        <h2 style="font-family:'Oswald',sans-serif;font-size:1.8rem;font-weight:700;letter-spacing:.04em;color:var(--black);margin-bottom:.4rem;">訂單查詢</h2>
+        <p style="font-size:.88rem;color:var(--text2);">輸入訂單編號與手機號碼查詢訂單狀態</p>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:var(--shadow);">
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">訂單編號 *</label>
+          <input id="queryTradeNo" type="text" placeholder="例：260326120938H699VC3N" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);padding:.65rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div style="margin-bottom:1.5rem;">
+          <label style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:.4rem;">手機號碼 *</label>
+          <input id="queryPhone" type="tel" placeholder="09xxxxxxxx" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);padding:.65rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:8px;outline:none;transition:border-color .18s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div id="queryError" style="display:none;background:#fdf2f2;color:var(--red);font-size:.82rem;padding:.6rem .9rem;border-radius:8px;margin-bottom:1rem;border-left:3px solid var(--red);"></div>
+        <button onclick="queryOrder()" id="queryBtn" style="width:100%;background:var(--red);color:#fff;border:none;padding:.75rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .18s;" onmouseover="this.style.background='var(--red-dark)'" onmouseout="this.style.background='var(--red)'">查詢訂單</button>
+      </div>
+
+      <!-- 查詢結果 -->
+      <div id="queryResult" style="display:none;margin-top:1.5rem;background:#fff;border-radius:16px;padding:2rem;box-shadow:var(--shadow);">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:1.2rem;">訂單資訊</div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:.72rem;color:var(--text3);margin-bottom:.2rem;">訂單編號</div>
+            <div id="qr-tradeno" style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:600;color:var(--black);word-break:break-all;"></div>
+          </div>
+          <div id="qr-date" style="font-size:.75rem;color:var(--text3);text-align:right;"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;">
+          <div style="background:var(--bg2);border-radius:10px;padding:.9rem 1rem;">
+            <div style="font-size:.68rem;color:var(--text3);margin-bottom:.4rem;font-weight:600;letter-spacing:.05em;">付款狀態</div>
+            <div id="qr-payment" style="font-size:1rem;font-weight:700;"></div>
+          </div>
+          <div style="background:var(--bg2);border-radius:10px;padding:.9rem 1rem;">
+            <div style="font-size:.68rem;color:var(--text3);margin-bottom:.4rem;font-weight:600;letter-spacing:.05em;">出貨狀態</div>
+            <div id="qr-shipping" style="font-size:1rem;font-weight:700;"></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:.68rem;color:var(--text3);margin-bottom:.4rem;font-weight:600;letter-spacing:.05em;">配送方式</div>
+          <div id="qr-method" style="font-size:.88rem;color:var(--text);"></div>
+        </div>
+
+        <div id="qr-address-wrap" style="margin-bottom:1rem;display:none;">
+          <div style="font-size:.68rem;color:var(--text3);margin-bottom:.4rem;font-weight:600;letter-spacing:.05em;">取貨地址／門市</div>
+          <div id="qr-address" style="font-size:.88rem;color:var(--text);"></div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid var(--border);">
+          <div style="font-size:.82rem;color:var(--text2);">訂單金額</div>
+          <div id="qr-amount" style="font-family:'Oswald',sans-serif;font-size:1.4rem;font-weight:700;color:var(--red);"></div>
+        </div>
+
+        <div id="qr-items" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.82rem;color:var(--text2);"></div>
+      </div>
+
+      <div style="text-align:center;margin-top:1.5rem;">
+        <a href="#" onclick="showPage('home');return false;" style="font-size:.82rem;color:var(--text3);text-decoration:none;">← 回到首頁</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-admin">
   <div class="admin-wrap">
     <div class="admin-login" id="adminLogin">
@@ -1733,11 +1804,34 @@ function closeShipModal() {
 // SHIPPING
 // ══════════════════════════════════════
 let selectedShipping = null;
-const SHIPPING_FEES = { store: 0, '711': 60, family: 60, home: 100 };
+const SHIPPING_FEES_BASE = { store: 0, '711': 60, family: 60, home: 100 };
 const SHIPPING_LABELS = { store: '店面取貨', '711': '7-11 超商取貨', family: '全家超商取貨', home: '宅配到府' };
+const FREE_SHIPPING_THRESHOLD = 3000;
+
+function getShippingFee(type) {
+  const cartTotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
+  if (type === 'store') return 0;
+  if (cartTotal >= FREE_SHIPPING_THRESHOLD) return 0;
+  return SHIPPING_FEES_BASE[type] || 0;
+}
 
 function selectShipping(type) {
   selectedShipping = type;
+  const cartTotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
+  const isFree = cartTotal >= FREE_SHIPPING_THRESHOLD;
+
+  // 更新選項顯示的費用文字
+  ['711','family','home'].forEach(k => {
+    const el = document.getElementById('ship-fee-' + k);
+    if (!el) return;
+    if (isFree) {
+      el.textContent = '免運費';
+      el.style.color = 'var(--green)';
+    } else {
+      el.textContent = '+NT$' + SHIPPING_FEES_BASE[k];
+      el.style.color = 'var(--text3)';
+    }
+  });
   ['store','711','family','home'].forEach(k => {
     const el = document.getElementById('ship-opt-'+k);
     if (!el) return;
@@ -1749,14 +1843,21 @@ function selectShipping(type) {
       el.style.background = '';
     }
   });
-  const fee = SHIPPING_FEES[type];
+  const fee = getShippingFee(type);
   const cartTotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
   const grand = cartTotal + fee;
 
   // 顯示運費列
   const feeRow = document.getElementById('shippingFeeRow');
-  feeRow.style.display = fee > 0 ? 'flex' : 'none';
-  document.getElementById('shippingFeeText').textContent = 'NT$' + fee;
+  if (fee > 0) {
+    feeRow.style.display = 'flex';
+    document.getElementById('shippingFeeText').textContent = 'NT$' + fee;
+  } else if (type !== 'store' && cartTotal >= FREE_SHIPPING_THRESHOLD) {
+    feeRow.style.display = 'flex';
+    document.getElementById('shippingFeeText').innerHTML = '<span style="color:var(--green);font-weight:700;">免運 🎉</span>';
+  } else {
+    feeRow.style.display = 'none';
+  }
 
   // 顯示總計
   document.getElementById('grandTotalRow').style.display = 'flex';
@@ -1796,11 +1897,14 @@ async function startCheckout() {
   if (!name || !phone || !email) {
     errEl.textContent = '請填寫姓名、手機及 Email'; errEl.style.display = 'block'; return;
   }
+  if (!/^[\u4e00-\u9fa5a-zA-Z]{2,}$/.test(name)) {
+    errEl.textContent = '姓名請輸入至少 2 個中文字或英文字母'; errEl.style.display = 'block'; return;
+  }
   if (!/^09\d{8}$/.test(phone)) {
     errEl.textContent = '手機格式錯誤，請輸入 09xxxxxxxx'; errEl.style.display = 'block'; return;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errEl.textContent = 'Email 格式不正確'; errEl.style.display = 'block'; return;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    errEl.textContent = 'Email 格式不正確（例：name@gmail.com）'; errEl.style.display = 'block'; return;
   }
   errEl.style.display = 'none';
 
@@ -1814,9 +1918,9 @@ async function startCheckout() {
     errEl.style.display = 'block'; return;
   }
 
-  const items  = cart.map(i => ({ name: i.name, qty: i.qty, price: i.price }));
+  const items  = cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }));
   const cartTotal = cart.reduce((a, b) => a + b.price * b.qty, 0);
-  const shippingFee = SHIPPING_FEES[selectedShipping];
+  const shippingFee = getShippingFee(selectedShipping);
   const amount = cartTotal + shippingFee;
 
   btn.textContent = '處理中，請稍候…'; btn.disabled = true;
@@ -2134,6 +2238,62 @@ function renderOrderList() {
 
 function updateOrderStatus(id, status) {
   // 保留相容，現在改由 markShipped 處理
+}
+
+// ══════════════════════════════════════
+// 訂單查詢（前台）
+// ══════════════════════════════════════
+async function queryOrder() {
+  const tradeNo = document.getElementById('queryTradeNo').value.trim();
+  const phone   = document.getElementById('queryPhone').value.trim();
+  const errEl   = document.getElementById('queryError');
+  const btn     = document.getElementById('queryBtn');
+
+  errEl.style.display = 'none';
+  document.getElementById('queryResult').style.display = 'none';
+
+  if (!tradeNo) { errEl.textContent = '請輸入訂單編號'; errEl.style.display = 'block'; return; }
+  if (!/^09\d{8}$/.test(phone)) { errEl.textContent = '手機格式錯誤，請輸入 09xxxxxxxx'; errEl.style.display = 'block'; return; }
+
+  btn.textContent = '查詢中…'; btn.disabled = true;
+  try {
+    const res = await fetch('https://qfwggbhqpyxrpyiotmlz.supabase.co/functions/v1/query-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tradeNo, phone }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data || data.error) {
+      errEl.textContent = data?.error || '查無訂單，請確認訂單編號與手機號碼是否正確'; errEl.style.display = 'block';
+    } else {
+      const o = data;
+      const payMap   = { pending:'⏳ 待付款', paid:'✅ 已付款', failed:'❌ 付款失敗' };
+      const shipMap  = { not_shipped:'📦 備貨中', shipped:'🚚 已出貨' };
+      const payColor = { pending:'var(--text2)', paid:'var(--green)', failed:'var(--red)' };
+      const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
+
+      document.getElementById('qr-tradeno').textContent = o.merchant_trade_no || o.id;
+      document.getElementById('qr-date').textContent = o.created_at ? o.created_at.replace('T',' ').slice(0,16) : '';
+      document.getElementById('qr-payment').innerHTML = `<span style="color:${payColor[o.payment_status]||'var(--text)'}">${payMap[o.payment_status]||o.payment_status}</span>`;
+      document.getElementById('qr-shipping').innerHTML = `<span style="color:${o.shipping_status==='shipped'?'var(--green)':'var(--accent)'}">${shipMap[o.shipping_status]||o.shipping_status}</span>`;
+      document.getElementById('qr-method').textContent = o.shipping_method || '未指定';
+      document.getElementById('qr-amount').textContent = 'NT$' + (o.amount||0).toLocaleString();
+      document.getElementById('qr-items').textContent = '商品：' + items.map(i=>`${i.name} × ${i.qty}`).join('、');
+
+      const addrWrap = document.getElementById('qr-address-wrap');
+      if (o.shipping_address && o.shipping_address !== '店面取貨') {
+        addrWrap.style.display = 'block';
+        document.getElementById('qr-address').textContent = o.shipping_address;
+      } else {
+        addrWrap.style.display = 'none';
+      }
+      document.getElementById('queryResult').style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = '查詢失敗，請稍後再試'; errEl.style.display = 'block';
+  } finally {
+    btn.textContent = '查詢訂單'; btn.disabled = false;
+  }
 }
 function startNewProduct() {
   editingId = null;
