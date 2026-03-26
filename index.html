@@ -1851,7 +1851,6 @@ function selectShipping(type) {
     }
   });
   const fee = getShippingFee(type);
-  const cartTotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
   const grand = cartTotal + fee;
 
   // 顯示運費列
