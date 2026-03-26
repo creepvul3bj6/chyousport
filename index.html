@@ -1951,6 +1951,9 @@ function openStoreMap() {
     form.appendChild(input);
   });
 
+  // 跳轉前備份購物車到 sessionStorage
+  sessionStorage.setItem('cartBackup', JSON.stringify(cart));
+
   document.body.appendChild(form);
   form.submit();
 }
@@ -1980,8 +1983,19 @@ function applyStoreData(data) {
   if (storeName && storeType) {
     // 清除 URL 參數，避免重新整理重複觸發
     history.replaceState({}, '', location.pathname);
+
+    // 恢復購物車
+    const cartBackup = sessionStorage.getItem('cartBackup');
+    if (cartBackup) {
+      try {
+        cart = JSON.parse(cartBackup);
+      } catch(e) {}
+      sessionStorage.removeItem('cartBackup');
+    }
+
     // 自動選擇對應配送方式並填入門市，打開結帳 modal
     setTimeout(() => {
+      renderCart();
       selectShipping(storeType);
       applyStoreData({ CVSStoreName: storeName, CVSAddress: storeAddr, CVSStoreID: storeId });
       openShipModal();
