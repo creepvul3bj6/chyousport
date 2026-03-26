@@ -1994,9 +1994,9 @@ function checkStoreCallback() {
 
   setTimeout(() => {
     renderCart();
+    openShipModal();
     selectShipping(storeType);
     applyStoreData({ CVSStoreName: storeName, CVSAddress: storeAddr, CVSStoreID: storeId });
-    openShipModal();
   }, 400);
 }
 
