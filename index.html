@@ -2090,7 +2090,7 @@ async function startCheckout() {
     errEl.style.display = 'block'; return;
   }
 
-  const items  = cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }));
+  const items  = cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, size: i.size || null }));
   const cartTotal = cart.reduce((a, b) => a + b.price * b.qty, 0);
   const shippingFee = getShippingFee(selectedShipping);
   const amount = cartTotal + shippingFee;
