@@ -291,6 +291,7 @@ nav {
 .cat-nav {
   display:flex; gap:0; overflow-x:auto; padding:0 2rem;
   scrollbar-width:none; justify-content:center;
+  overscroll-behavior-x:contain; touch-action:pan-x;
 }
 .cat-nav::-webkit-scrollbar { display:none; }
 .cat-nav-btn {
@@ -844,7 +845,7 @@ footer {
   .cat-page-back { margin:1rem 1rem 0; }
   .cat-page-header { padding:1rem 1rem 0; }
   .cat-page-grid-wrap { padding:1rem 1rem 3rem; }
-  #page-cat .product-grid { grid-template-columns:1fr; }
+  #page-cat .product-grid { grid-template-columns:repeat(2,1fr); gap:0.6rem; }
 }
 
 /* ── RESPONSIVE ── */
@@ -882,11 +883,13 @@ footer {
   .order-info { grid-template-columns:1fr; }
 }
 @media (max-width:480px) {
-  nav { padding:0 1.2rem; height:60px; }
+  nav { padding:0 1rem; height:60px; }
+  .cart-btn { font-size:.78rem; padding:.4rem .6rem; }
   .nav-links { top:60px; }
   .nav-logo { font-size:1.1rem; }
   .nav-logo .dot { font-size:1.3rem; }
-  .nav-search-input { font-size:0.75rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
+  .nav-search-input { font-size:0.78rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
+  .nav-search-center { max-width:100% !important; }
   .hero { padding-top:60px; }
   .hero-left { padding:2.5rem 1.2rem 2rem; }
   .hero-btns { flex-direction:column; }
@@ -924,7 +927,7 @@ footer {
 <!-- ═══ NAV ═══ -->
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">球友<span class="dot">.</span>體育</a>
-  <div style="flex:1;display:flex;justify-content:center;padding:0 1rem;">
+  <div style="flex:1;display:flex;justify-content:center;padding:0 0.5rem;">
     <div style="position:relative;width:100%;max-width:360px;" class="nav-search-center">
       <div class="nav-search-wrap" id="navSearchWrap" style="width:100%;">
         <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)" style="width:100%;max-width:100%;">
@@ -947,14 +950,6 @@ footer {
   </div>
   <!-- 手機版下拉選單（三條線點開） -->
   <ul class="nav-links" id="navLinks">
-    <li style="padding:.8rem 1.5rem;border-bottom:1px solid var(--border);">
-      <div style="position:relative;">
-        <input type="text" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)"
-          style="width:100%;padding:.5rem 2rem .5rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg2);"
-          onfocusin="this.style.borderColor='var(--red)'" onfocusout="this.style.borderColor='var(--border)'">
-        <span style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);pointer-events:none;">🔍</span>
-      </div>
-    </li>
     <li><a href="#" onclick="closeMenu();showPage('order-query');return false;">訂單查詢</a></li>
     <li><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
   </ul>
