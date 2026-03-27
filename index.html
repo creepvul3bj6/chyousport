@@ -2520,10 +2520,26 @@ async function markShipped(id) {
   }
 }
 
+async function markRefunded(id) {
+  if (!confirm('確認要將此訂單標記為已退款？')) return;
+  try {
+    await sbFetch('orders?id=eq.' + id, {
+      method: 'PATCH',
+      body: JSON.stringify({ payment_status: 'refunded' }),
+    });
+    const o = dbOrders.find(x => x.id === id);
+    if (o) o.payment_status = 'refunded';
+    renderOrderList();
+    renderOverview();
+  } catch(e) {
+    alert('更新失敗：' + e.message);
+  }
+}
+
 function renderOrderCard(o) {
-  const payLabel = {pending:'待付款', paid:'已付款', failed:'付款失敗'}[o.payment_status] || o.payment_status;
+  const payLabel = {pending:'待付款', paid:'已付款', failed:'付款失敗', refunded:'已退款'}[o.payment_status] || o.payment_status;
   const shipLabel = o.shipping_status === 'shipped' ? '已出貨' : '未出貨';
-  const payColor  = o.payment_status === 'paid' ? 'var(--green)' : o.payment_status === 'failed' ? 'var(--red)' : 'var(--text3)';
+  const payColor  = o.payment_status === 'paid' ? 'var(--green)' : o.payment_status === 'failed' ? 'var(--red)' : o.payment_status === 'refunded' ? 'var(--accent)' : 'var(--text3)';
   const shipColor = o.shipping_status === 'shipped' ? 'var(--green)' : 'var(--accent)';
   const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
   const canShip = o.payment_status === 'paid' && o.shipping_status !== 'shipped';
@@ -2550,7 +2566,10 @@ function renderOrderCard(o) {
       <div class="order-items-list">商品：${items.map(i=>`${i.name}×${i.qty}`).join('、')}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;">
         <div style="font-size:.75rem;color:var(--text3);">${tradeDate}</div>
-        ${canShip ? `<button onclick="markShipped('${o.id}')" style="font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:6px;border:none;background:var(--green);color:#fff;cursor:pointer;">✓ 標記已出貨</button>` : ''}
+        <div style="display:flex;gap:.5rem;">
+          ${canShip ? `<button onclick="markShipped('${o.id}')" style="font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:6px;border:none;background:var(--green);color:#fff;cursor:pointer;">✓ 標記已出貨</button>` : ''}
+          ${o.payment_status !== 'refunded' && o.payment_status !== 'pending' ? `<button onclick="markRefunded('${o.id}')" style="font-size:.75rem;font-weight:700;padding:.3rem .9rem;border-radius:6px;border:1.5px solid var(--red);background:#fff;color:var(--red);cursor:pointer;">↩ 標記已退款</button>` : ''}
+        </div>
       </div>
     </div>
   `;
