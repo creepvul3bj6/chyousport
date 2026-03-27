@@ -48,7 +48,7 @@ nav {
   display:flex; align-items:center; gap:0.3rem;
 }
 .nav-logo .dot { color:var(--red); font-size:1.8rem; line-height:1; margin-top:-4px; }
-.nav-links { display:flex; gap:0; list-style:none; align-items:center; }
+.nav-links { display:none; gap:0; list-style:none; align-items:center; }
 .nav-links a {
   font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500;
   letter-spacing:0.02em; color:var(--text2); text-decoration:none;
@@ -71,13 +71,13 @@ nav {
 }
 /* ── SEARCH ── */
 .nav-search-wrap {
-  position:relative; display:flex; align-items:center;
+  position:relative; display:flex; align-items:center; width:100%;
 }
 .nav-search-input {
   font-family:'DM Sans',sans-serif; font-size:0.85rem;
   background:var(--bg2); border:1.5px solid var(--border);
   color:var(--text); padding:0.45rem 2.2rem 0.45rem 0.9rem;
-  border-radius:8px; width:180px; transition:all .2s; outline:none;
+  border-radius:8px; width:100%; transition:all .2s; outline:none;
 }
 .nav-search-input:focus { border-color:var(--red); width:220px; background:#fff; }
 .nav-search-icon {
@@ -286,10 +286,11 @@ nav {
   position:sticky; top:68px; z-index:300;
   background:rgba(255,255,255,0.96); backdrop-filter:blur(8px);
   border-bottom:1px solid var(--border);
+  margin-top:68px;
 }
 .cat-nav {
-  display:flex; gap:0; overflow-x:auto; padding:0 5rem;
-  scrollbar-width:none;
+  display:flex; gap:0; overflow-x:auto; padding:0 2rem;
+  scrollbar-width:none; justify-content:center;
 }
 .cat-nav::-webkit-scrollbar { display:none; }
 .cat-nav-btn {
@@ -885,8 +886,7 @@ footer {
   .nav-links { top:60px; }
   .nav-logo { font-size:1.1rem; }
   .nav-logo .dot { font-size:1.3rem; }
-  .nav-search-input { width:90px; font-size:0.75rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
-  .nav-search-input:focus { width:120px; }
+  .nav-search-input { font-size:0.75rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
   .hero { padding-top:60px; }
   .hero-left { padding:2.5rem 1.2rem 2rem; }
   .hero-btns { flex-direction:column; }
@@ -896,7 +896,13 @@ footer {
   .cat-section { padding:2rem 1.2rem; }
   .cat-nav { padding:0 1rem; }
   .cat-grid { grid-template-columns:repeat(2,1fr); gap:0.7rem; }
-  .product-grid { grid-template-columns:1fr; }
+  .product-grid { grid-template-columns:repeat(2,1fr); gap:0.6rem; }
+  .product-card { border-radius:10px; }
+  .product-img-wrap { height:140px; }
+  .product-name { font-size:.78rem; }
+  .product-price { font-size:1rem; }
+  .product-sub { font-size:.68rem; }
+  .btn-add-cart { font-size:.75rem; padding:.45rem .6rem; }
   .product-btns { flex-direction:column; }
   .btn-detail, .btn-add { width:100%; text-align:center; }
   .cart-sidebar { width:100%; right:-100%; }
@@ -918,30 +924,40 @@ footer {
 <!-- ═══ NAV ═══ -->
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">球友<span class="dot">.</span>體育</a>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#" onclick="closeMenu();showPage('home');return false;">首頁</a></li>
-    <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('categories').scrollIntoView({behavior:'smooth'}),100);return false;">分類</a></li>
-    <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('products-section').scrollIntoView({behavior:'smooth'}),100);return false;">商品</a></li>
-    <li><a href="#" onclick="closeMenu();showPage('home');setTimeout(()=>document.getElementById('policy').scrollIntoView({behavior:'smooth'}),100);return false;">購物保障</a></li>
-    <li><a href="#" onclick="closeMenu();showPage('order-query');return false;">訂單查詢</a></li>
-    <li class="mobile-only"><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
-  </ul>
-  <div class="nav-right">
-    <div style="position:relative;">
-      <div class="nav-search-wrap" id="navSearchWrap">
-        <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)">
+  <div style="flex:1;display:flex;justify-content:center;padding:0 1rem;">
+    <div style="position:relative;width:100%;max-width:360px;" class="nav-search-center">
+      <div class="nav-search-wrap" id="navSearchWrap" style="width:100%;">
+        <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)" style="width:100%;max-width:100%;">
         <span class="nav-search-icon">🔍</span>
       </div>
       <div class="search-dropdown" id="searchDropdown"></div>
     </div>
+  </div>
+  <div class="nav-right">
+    <!-- 電腦版：訂單查詢 + 後台管理直接顯示 -->
+    <a href="#" class="desktop-only" onclick="showPage('order-query');return false;" style="font-size:.85rem;color:var(--text2);text-decoration:none;padding:.4rem .7rem;border-radius:6px;white-space:nowrap;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">訂單查詢</a>
     <button class="admin-btn desktop-only" onclick="showPage('admin')">後台管理</button>
     <button class="cart-btn" onclick="toggleCart()">
       🛒 購物車 <span class="cart-count" id="cartCount">0</span>
     </button>
+    <!-- 手機版：三條線漢堡選單 -->
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="選單">
       <span></span><span></span><span></span>
     </button>
   </div>
+  <!-- 手機版下拉選單（三條線點開） -->
+  <ul class="nav-links" id="navLinks">
+    <li style="padding:.8rem 1.5rem;border-bottom:1px solid var(--border);">
+      <div style="position:relative;">
+        <input type="text" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)"
+          style="width:100%;padding:.5rem 2rem .5rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg2);"
+          onfocusin="this.style.borderColor='var(--red)'" onfocusout="this.style.borderColor='var(--border)'">
+        <span style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);pointer-events:none;">🔍</span>
+      </div>
+    </li>
+    <li><a href="#" onclick="closeMenu();showPage('order-query');return false;">訂單查詢</a></li>
+    <li><a href="#" onclick="closeMenu();showPage('admin');return false;">後台管理</a></li>
+  </ul>
 </nav>
 <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
 
@@ -1073,87 +1089,6 @@ footer {
 <div class="page active" id="page-home">
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero-left">
-      <span class="hero-eyebrow">球友體育用品社 · 苗栗在地老字號</span>
-      <h1 class="hero-title">
-        專業體育<br>
-        裝備一站<br>
-        <span class="accent">購足</span>
-      </h1>
-      <p class="hero-sub">從棒壘到桌球、羽球到路跑，四十年專業經驗，為你找到最適合的裝備。苗栗光復路實體店 + 線上購物。</p>
-      <div class="hero-btns">
-        <button class="btn-primary" onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})">立即選購</button>
-        <button class="btn-outline" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">查看分類</button>
-      </div>
-      <div class="hero-stats">
-        <div>
-          <span class="hero-stat-num">40+</span>
-          <div class="hero-stat-label">年專業經驗</div>
-        </div>
-        <div>
-          <span class="hero-stat-num">7</span>
-          <div class="hero-stat-label">大運動類別</div>
-        </div>
-        <div>
-          <span class="hero-stat-num">2-3天</span>
-          <div class="hero-stat-label">全台快速到貨</div>
-        </div>
-      </div>
-    </div>
-    <div class="hero-right">
-      <div class="hero-right-inner">
-        <div class="hero-bg-text">SPORT</div>
-        <div class="hero-badge-wrap">
-          <div class="hero-badge">
-            <div class="hero-badge-icon">🚚</div>
-            <div class="hero-badge-text">
-              <strong>快速出貨</strong>
-              週一至週五當天出貨
-            </div>
-          </div>
-          <div class="hero-badge">
-            <div class="hero-badge-icon">🛡️</div>
-            <div class="hero-badge-text">
-              <strong>品質保證</strong>
-              瑕疵品7天免費退換
-            </div>
-          </div>
-          <div class="hero-badge">
-            <div class="hero-badge-icon">📍</div>
-            <div class="hero-badge-text">
-              <strong>實體門市</strong>
-              苗栗市光復路103號
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MARQUEE -->
-  <div class="marquee-bar">
-    <div class="marquee-track">
-      <span class="marquee-item">棒壘球專區</span>
-      <span class="marquee-item">桌球用品</span>
-      <span class="marquee-item">羽球拍</span>
-      <span class="marquee-item">球類運動</span>
-      <span class="marquee-item">慢跑鞋&路跑鞋</span>
-      <span class="marquee-item">健身器材</span>
-      <span class="marquee-item">出清商品</span>
-      <span class="marquee-item">運動配件</span>
-      <span class="marquee-item">棒壘球專區</span>
-      <span class="marquee-item">桌球用品</span>
-      <span class="marquee-item">羽球拍</span>
-      <span class="marquee-item">球類運動</span>
-      <span class="marquee-item">慢跑鞋&路跑鞋</span>
-      <span class="marquee-item">健身器材</span>
-      <span class="marquee-item">出清商品</span>
-      <span class="marquee-item">運動配件</span>
-    </div>
-  </div>
-
-
   <!-- CAT NAV STRIP -->
   <div class="cat-nav-wrap" id="products-section">
     <div class="cat-nav">
@@ -1165,6 +1100,22 @@ footer {
       <button class="cat-nav-btn" onclick="scrollToCat('健身器材')">🏋️ 健身</button>
       <button class="cat-nav-btn" onclick="scrollToCat('運動配件')">🎽 配件</button>
       <button class="cat-nav-btn" onclick="scrollToCat('出清商品')">🏷️ 出清</button>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-bar">
+    <div class="marquee-track">
+      <span class="marquee-item">🎉 全館限時優惠</span>
+      <span class="marquee-item">🚚 滿 $3,000 免運費</span>
+      <span class="marquee-item">⚡ 週一至週五當日出貨</span>
+      <span class="marquee-item">🛡️ 瑕疵品 7 天免費退換</span>
+      <span class="marquee-item">📍 苗栗市光復路103號實體店</span>
+      <span class="marquee-item">🎉 全館限時優惠</span>
+      <span class="marquee-item">🚚 滿 $3,000 免運費</span>
+      <span class="marquee-item">⚡ 週一至週五當日出貨</span>
+      <span class="marquee-item">🛡️ 瑕疵品 7 天免費退換</span>
+      <span class="marquee-item">📍 苗栗市光復路103號實體店</span>
     </div>
   </div>
 
