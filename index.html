@@ -762,6 +762,90 @@ footer {
 .reveal { opacity:0; transform:translateY(24px); transition:opacity .65s ease,transform .65s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
 
+/* ── 更多商品按鈕 ── */
+.cat-more-btn {
+  margin-left:auto; font-size:0.82rem; font-weight:600;
+  color:var(--red); background:var(--red-light);
+  border:1.5px solid rgba(217,43,43,0.2); padding:0.4rem 1rem;
+  border-radius:20px; cursor:pointer; transition:all .18s;
+  white-space:nowrap; display:inline-flex; align-items:center; gap:0.3rem;
+}
+.cat-more-btn:hover { background:var(--red); color:#fff; }
+
+/* ── 手機版商品橫向滑動 ── */
+.product-scroll-wrap {
+  display:none; /* 桌機隱藏 */
+}
+@media (max-width:900px) {
+  .product-grid-desktop { display:none !important; }
+  .product-scroll-wrap {
+    display:block;
+    overflow-x:auto; overflow-y:hidden;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    margin:0 -2rem; padding:0 2rem 1rem;
+  }
+  .product-scroll-wrap::-webkit-scrollbar { display:none; }
+  .product-scroll-inner {
+    display:flex; gap:0.85rem;
+    width:max-content;
+  }
+  .product-scroll-inner .product-card {
+    width:190px; flex-shrink:0;
+  }
+}
+@media (max-width:480px) {
+  .product-scroll-wrap {
+    margin:0 -1.2rem; padding:0 1.2rem 1rem;
+  }
+  .product-scroll-inner .product-card {
+    width:170px;
+  }
+}
+
+/* ── 分類頁 ── */
+#page-cat { padding-top:68px; min-height:100vh; background:var(--bg); }
+.cat-page-back {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  font-size:0.82rem; font-weight:500; color:var(--text2);
+  background:none; border:none; cursor:pointer;
+  margin:2rem 5rem 0; transition:color .18s; padding:0;
+}
+.cat-page-back:hover { color:var(--red); }
+.cat-page-header {
+  max-width:1100px; margin:0 auto; padding:1.5rem 3rem 0;
+  display:flex; align-items:center; gap:1rem;
+}
+.cat-page-icon {
+  width:52px; height:52px; background:var(--red-light);
+  border-radius:12px; display:flex; align-items:center;
+  justify-content:center; font-size:1.6rem;
+}
+.cat-page-title {
+  font-family:'Oswald',sans-serif; font-size:2rem;
+  font-weight:700; letter-spacing:0.02em; color:var(--black);
+}
+.cat-page-count {
+  margin-left:auto; font-size:0.78rem; color:var(--text3);
+  background:var(--bg2); border:1px solid var(--border);
+  padding:0.3rem 0.9rem; border-radius:20px;
+}
+.cat-page-grid-wrap {
+  max-width:1100px; margin:0 auto; padding:2rem 3rem 5rem;
+}
+@media (max-width:900px) {
+  .cat-page-back { margin:1.5rem 1.5rem 0; }
+  .cat-page-header { padding:1.5rem 1.5rem 0; }
+  .cat-page-grid-wrap { padding:1.5rem 1.5rem 4rem; }
+  /* 分類頁手機版用正常 grid */
+  #page-cat .product-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:480px) {
+  .cat-page-back { margin:1rem 1rem 0; }
+  .cat-page-header { padding:1rem 1rem 0; }
+  .cat-page-grid-wrap { padding:1rem 1rem 3rem; }
+  #page-cat .product-grid { grid-template-columns:1fr; }
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width:900px) {
   nav { padding:0 1.5rem; }
@@ -1211,6 +1295,19 @@ footer {
   </footer>
 </div>
 
+<!-- ═══ CAT PAGE ═══ -->
+<div class="page" id="page-cat">
+  <button class="cat-page-back" onclick="goBackFromCat()">← 返回</button>
+  <div class="cat-page-header">
+    <div class="cat-page-icon" id="catPageIcon">🏅</div>
+    <h2 class="cat-page-title" id="catPageTitle"></h2>
+    <span class="cat-page-count" id="catPageCount"></span>
+  </div>
+  <div class="cat-page-grid-wrap">
+    <div class="product-grid" id="catPageGrid"></div>
+  </div>
+</div>
+
 <!-- ═══ DETAIL ═══ -->
 <div class="page" id="page-detail">
   <button class="detail-back" id="detailBackBtn" onclick="goBackFromDetail()">← 返回</button>
@@ -1506,21 +1603,32 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold:0.06 });
 
 function renderAllCatSections() {
+  const MAX_HOME = 6;
   const container = document.getElementById('allCatSections');
   container.innerHTML = CATEGORIES.map(cat => {
     const catProducts = products.filter(p => p.cat === cat);
     const countEl = document.getElementById('cat-count-' + cat);
     if (countEl) countEl.textContent = catProducts.length + ' 項商品';
+    const showProducts = catProducts.slice(0, MAX_HOME);
+    const hasMore = catProducts.length > MAX_HOME;
+    const moreBtn = hasMore
+      ? `<button class="cat-more-btn" onclick="showCatPage('${cat}')">更多商品 →</button>`
+      : '';
+    const cards = showProducts.map(p => renderProductCard(p)).join('');
     return `
       <div class="cat-section reveal" id="cat-section-${cat}">
         <div class="cat-section-header">
           <div class="cat-section-icon">${CAT_ICONS[cat]||'🏅'}</div>
           <h2 class="cat-section-title">${cat}</h2>
           <span class="cat-section-count">${catProducts.length} 項商品</span>
+          ${moreBtn}
         </div>
         ${catProducts.length === 0
           ? `<div class="cat-empty">📦 此分類尚無商品，請至後台新增。</div>`
-          : `<div class="product-grid">${catProducts.map(p => renderProductCard(p)).join('')}</div>`
+          : `
+            <div class="product-grid product-grid-desktop">${cards}</div>
+            <div class="product-scroll-wrap"><div class="product-scroll-inner">${cards}</div></div>
+          `
         }
       </div>
     `;
@@ -1562,11 +1670,18 @@ function renderProductCard(p) {
 // ══════════════════════════════════════
 // PRODUCT DETAIL
 // ══════════════════════════════════════
+let detailCameFromCat = false;
+
 function showDetail(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   currentDetailId = id; detailQty = 1; detailBackCat = p.cat;
   detailBackScroll = window.scrollY;
+  // 判斷是否從分類頁進來
+  const activePage = document.querySelector('.page.active');
+  detailCameFromCat = activePage && activePage.id === 'page-cat';
+  const backBtn = document.getElementById('detailBackBtn');
+  if (backBtn) backBtn.textContent = detailCameFromCat ? `← 返回 ${p.cat}` : '← 返回';
   document.getElementById('detailCat').textContent = p.cat;
   document.getElementById('detailName').textContent = p.name;
   document.getElementById('detailDesc').textContent = p.desc;
@@ -1623,7 +1738,13 @@ function showDetail(id) {
     ).join('');
   }
   showPage('detail');
-  history.pushState({ page: 'detail', backCat: p.cat, backScroll: detailBackScroll }, '', '');
+  history.pushState({
+    page: 'detail',
+    backCat: p.cat,
+    backScroll: detailBackScroll,
+    fromCat: detailCameFromCat,
+    catName: detailCameFromCat ? currentCatPage : null,
+  }, '', '');
 }
 
 function switchDetailImg(idx) {
@@ -1724,11 +1845,47 @@ function addDetailToCart() {
   document.getElementById('cartOverlay').classList.add('open');
 }
 
-function goBackFromDetail() {
+// ══════════════════════════════════════
+// CAT PAGE
+// ══════════════════════════════════════
+let catPageBackScroll = 0;
+let currentCatPage = null;
+
+function showCatPage(cat) {
+  catPageBackScroll = window.scrollY;
+  currentCatPage = cat;
+  const catProducts = products.filter(p => p.cat === cat);
+  document.getElementById('catPageIcon').textContent = CAT_ICONS[cat] || '🏅';
+  document.getElementById('catPageTitle').textContent = cat;
+  document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
+  document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
+  showPage('cat');
+  history.pushState({ page: 'cat', cat, backScroll: catPageBackScroll }, '', '');
+}
+
+function goBackFromCat() {
   showPage('home');
-  setTimeout(() => {
-    window.scrollTo({ top: detailBackScroll || 0, behavior: 'smooth' });
-  }, 80);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: catPageBackScroll || 0, behavior: 'auto' });
+    });
+  });
+}
+
+function goBackFromDetail() {
+  if (detailCameFromCat) {
+    showPage('cat');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: detailBackScroll || 0, behavior: 'auto' });
+      });
+    });
+  } else {
+    showPage('home');
+    setTimeout(() => {
+      window.scrollTo({ top: detailBackScroll || 0, behavior: 'smooth' });
+    }, 80);
+  }
 }
 
 // ══════════════════════════════════════
@@ -2639,14 +2796,65 @@ renderCart();
 // ── 瀏覽器上一頁 & iOS 滑動返回 ──
 history.replaceState({ page: 'home' }, '', '');
 window.addEventListener('popstate', function(e) {
-  const backScroll = (e.state && e.state.backScroll != null) ? e.state.backScroll : (detailBackScroll || 0);
-  showPage('home');
-  // 雙 rAF 確保 iOS 頁面渲染完成後再 scroll
-  requestAnimationFrame(() => {
+  const state = e.state || {};
+
+  if (state.page === 'cat') {
+    // 從詳情頁滑回分類頁
+    if (state.cat) {
+      currentCatPage = state.cat;
+      const catProducts = products.filter(p => p.cat === state.cat);
+      document.getElementById('catPageIcon').textContent = CAT_ICONS[state.cat] || '🏅';
+      document.getElementById('catPageTitle').textContent = state.cat;
+      document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
+      document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
+    }
+    showPage('cat');
+    // 恢復分類頁的 scroll 位置
+    const catScroll = (state.backScroll != null) ? state.backScroll : 0;
     requestAnimationFrame(() => {
-      window.scrollTo({ top: backScroll, behavior: 'auto' });
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: catScroll, behavior: 'auto' });
+      });
     });
-  });
+
+  } else if (state.page === 'detail') {
+    // 從詳情頁滑回去
+    if (state.fromCat && state.catName) {
+      // 來自分類頁，回分類頁
+      currentCatPage = state.catName;
+      const catProducts = products.filter(p => p.cat === state.catName);
+      document.getElementById('catPageIcon').textContent = CAT_ICONS[state.catName] || '🏅';
+      document.getElementById('catPageTitle').textContent = state.catName;
+      document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
+      document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
+      showPage('cat');
+      const catScroll = (state.backScroll != null) ? state.backScroll : 0;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: catScroll, behavior: 'auto' });
+        });
+      });
+    } else {
+      // 來自首頁，回首頁
+      showPage('home');
+      const backScroll = (state.backScroll != null) ? state.backScroll : (detailBackScroll || 0);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: backScroll, behavior: 'auto' });
+        });
+      });
+    }
+
+  } else {
+    // 回首頁
+    const backScroll = (state.backScroll != null) ? state.backScroll : (detailBackScroll || 0);
+    showPage('home');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: backScroll, behavior: 'auto' });
+      });
+    });
+  }
 });
 </script>
 </body>
