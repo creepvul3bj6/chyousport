@@ -364,14 +364,14 @@ nav {
   flex:1; font-size:0.78rem; font-weight:500; color:var(--text2);
   background:var(--bg2); border:1px solid var(--border);
   padding:0.5rem 0.75rem; border-radius:7px; cursor:pointer; transition:all .18s;
-  white-space:nowrap;
+  white-space:nowrap; height:36px; display:flex; align-items:center; justify-content:center;
 }
 .btn-detail:hover { background:var(--bg3); border-color:var(--border2); color:var(--text); }
 .btn-add {
   flex:1; font-size:0.78rem; font-weight:600; color:#fff;
   background:var(--red); border:none;
   padding:0.5rem 0.75rem; border-radius:7px; cursor:pointer; transition:background .18s;
-  white-space:nowrap;
+  white-space:nowrap; height:36px; display:flex; align-items:center; justify-content:center;
 }
 .btn-add:hover { background:var(--red-dark); }
 
@@ -2090,7 +2090,7 @@ async function startCheckout() {
     errEl.style.display = 'block'; return;
   }
 
-  const items  = cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, size: i.size || null }));
+  const items  = cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }));
   const cartTotal = cart.reduce((a, b) => a + b.price * b.qty, 0);
   const shippingFee = getShippingFee(selectedShipping);
   const amount = cartTotal + shippingFee;
