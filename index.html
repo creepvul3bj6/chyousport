@@ -883,13 +883,14 @@ footer {
   .order-info { grid-template-columns:1fr; }
 }
 @media (max-width:480px) {
-  nav { padding:0 1rem; height:60px; }
-  .cart-btn { font-size:.78rem; padding:.4rem .6rem; }
+  nav { padding:0 1rem; height:60px; display:flex; justify-content:space-between; }
+  .cart-btn { font-size:.78rem; padding:.4rem .5rem; white-space:nowrap; }
   .nav-links { top:60px; }
-  .nav-logo { font-size:1.1rem; }
-  .nav-logo .dot { font-size:1.3rem; }
-  .nav-search-input { font-size:0.78rem; padding:0.4rem 1.8rem 0.4rem 0.7rem; }
-  .nav-search-center { max-width:100% !important; }
+  .nav-logo { font-size:1.05rem; flex-shrink:0; }
+  .nav-logo .dot { font-size:1.2rem; }
+  .nav-search-input { font-size:0.75rem; padding:0.35rem 1.6rem 0.35rem 0.6rem; width:100% !important; }
+  .nav-search-center { max-width:130px !important; }
+  .nav-right { gap:0.4rem; }
   .hero { padding-top:60px; }
   .hero-left { padding:2.5rem 1.2rem 2rem; }
   .hero-btns { flex-direction:column; }
@@ -927,8 +928,8 @@ footer {
 <!-- ═══ NAV ═══ -->
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">球友<span class="dot">.</span>體育</a>
-  <div style="display:flex;justify-content:center;align-items:center;">
-    <div style="position:relative;width:320px;">
+  <div style="display:flex;justify-content:center;align-items:center;flex:1;padding:0 0.5rem;">
+    <div style="position:relative;width:100%;max-width:320px;" class="nav-search-center">
       <div class="nav-search-wrap" id="navSearchWrap" style="width:100%;">
         <input type="text" class="nav-search-input" id="navSearchInput" placeholder="搜尋商品..." oninput="handleSearch(this.value)" onfocus="showSearchDrop()" onblur="setTimeout(hideSearchDrop,200)" style="width:100%;">
         <span class="nav-search-icon">🔍</span>
