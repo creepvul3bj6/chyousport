@@ -2618,7 +2618,7 @@ async function queryOrder() {
       const o = data;
       const payMap   = { pending:'⏳ 待付款', paid:'✅ 已付款', failed:'❌ 付款失敗', refunded:'↩ 已退款' };
       const shipMap  = { not_shipped:'📦 備貨中', shipped:'🚚 已出貨' };
-      const payColor = { pending:'var(--text2)', paid:'var(--green)', failed:'var(--red)' };
+      const payColor = { pending:'var(--text2)', paid:'var(--green)', failed:'var(--red)', refunded:'var(--red)' };
       const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
 
       document.getElementById('qr-tradeno').textContent = o.merchant_trade_no || o.id;
