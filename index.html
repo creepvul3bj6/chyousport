@@ -2616,7 +2616,7 @@ async function queryOrder() {
       errEl.textContent = data?.error || '查無訂單，請確認訂單編號與手機號碼是否正確'; errEl.style.display = 'block';
     } else {
       const o = data;
-      const payMap   = { pending:'⏳ 待付款', paid:'✅ 已付款', failed:'❌ 付款失敗' };
+      const payMap   = { pending:'⏳ 待付款', paid:'✅ 已付款', failed:'❌ 付款失敗', refunded:'↩ 已退款' };
       const shipMap  = { not_shipped:'📦 備貨中', shipped:'🚚 已出貨' };
       const payColor = { pending:'var(--text2)', paid:'var(--green)', failed:'var(--red)' };
       const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
