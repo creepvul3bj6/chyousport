@@ -2031,11 +2031,18 @@ function applyStoreData(data) {
 
 // 頁面載入時，如果 URL 有門市參數（從 store-callback redirect 回來）就自動填入
 function checkStoreCallback() {
-  // 用最頂端存好的 _initParams，不受 history.replaceState 影響
-  const storeName = _initParams.get('storeName') || '';
-  const storeAddr = _initParams.get('storeAddr') || '';
-  const storeId   = _initParams.get('storeId')   || '';
-  const storeType = _initParams.get('storeType') || '';
+  // 改用 sessionStorage（store-callback 寫入，URL 保持乾淨）
+  const raw = sessionStorage.getItem('pendingStoreData');
+  if (!raw) return;
+  sessionStorage.removeItem('pendingStoreData');
+
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+
+  const storeName = data.storeName || '';
+  const storeAddr = data.storeAddr || '';
+  const storeId   = data.storeId   || '';
+  const storeType = data.storeType || '';
 
   if (!storeName || !storeType) return;
 
