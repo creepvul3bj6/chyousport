@@ -325,8 +325,13 @@ nav {
 .cat-card:hover .cat-arrow { opacity:1; transform:translateX(0); color:var(--red); }
 
 /* ── INFO STRIP ── */
+.sticky-header-wrap {
+  position:sticky; top:68px; z-index:300;
+}
+@media (max-width:900px) {
+  .sticky-header-wrap { top:60px; }
+}
 .info-strip {
-  position:relative; z-index:1;
   background:#fff; border-bottom:1px solid var(--border);
   border-top:2px solid var(--red);
 }
@@ -1157,22 +1162,23 @@ footer {
 
   <!-- HERO -->
   <!-- CAT NAV STRIP -->
-  <div class="info-strip" id="products-section">
-    <div class="info-strip-inner">
-      <span class="info-strip-item">🎉 全館限時優惠</span>
-      <span class="info-strip-divider">|</span>
-      <span class="info-strip-item">🚚 滿 $3,000 免運費</span>
-      <span class="info-strip-divider">|</span>
-      <span class="info-strip-item">⚡ 週一至週五當日出貨</span>
-      <span class="info-strip-divider">|</span>
-      <span class="info-strip-item">🛡️ 瑕疵品 7 天免費退換</span>
-      <span class="info-strip-divider">|</span>
-      <span class="info-strip-item">📍 苗栗市光復路103號實體店</span>
+  <div class="sticky-header-wrap" id="products-section">
+    <div class="info-strip">
+      <div class="info-strip-inner">
+        <span class="info-strip-item">🎉 全館限時優惠</span>
+        <span class="info-strip-divider">|</span>
+        <span class="info-strip-item">🚚 滿 $3,000 免運費</span>
+        <span class="info-strip-divider">|</span>
+        <span class="info-strip-item">⚡ 週一至週五當日出貨</span>
+        <span class="info-strip-divider">|</span>
+        <span class="info-strip-item">🛡️ 瑕疵品 7 天免費退換</span>
+        <span class="info-strip-divider">|</span>
+        <span class="info-strip-item">📍 苗栗市光復路103號實體店</span>
+      </div>
     </div>
-  </div>
 
-  <!-- BRAND LOGO STRIP（放在 info-strip 下方、非 sticky 範圍內） -->
-  <div class="brand-strip" style="position:relative;z-index:0;">
+    <!-- BRAND LOGO STRIP -->
+    <div class="brand-strip">
     <div class="brand-track">
       <!-- 第一組 -->
       <div class="brand-logo-item">
@@ -1209,6 +1215,7 @@ footer {
         </svg>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- PRODUCT SECTIONS -->
