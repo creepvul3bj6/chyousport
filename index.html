@@ -228,6 +228,7 @@ nav {
   border-top:1px solid var(--border);
   border-bottom:1px solid var(--border);
   padding:1.6rem 0;
+  position:relative; z-index:1;
 }
 .brand-track {
   display:flex; align-items:center;
@@ -246,11 +247,18 @@ nav {
 .brand-logo-item img {
   height:36px; width:auto;
   object-fit:contain;
-  filter:grayscale(100%) opacity(0.45);
+  filter:brightness(0);
   transition:filter .3s ease;
 }
 .brand-logo-item img:hover {
-  filter:grayscale(0%) opacity(1);
+  filter:brightness(0);
+}
+.brand-logo-item svg {
+  height:36px; width:auto;
+  transition:opacity .3s ease;
+}
+@media (max-width:480px) {
+  .brand-logo-item svg { height:28px; }
 }
 @media (max-width:480px) {
   .brand-logo-item { padding:0 2.2rem; }
@@ -1174,10 +1182,14 @@ footer {
         <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Asics_Logo.svg" alt="ASICS">
       </div>
       <div class="brand-logo-item">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_SSK.svg" alt="SSK">
+        <svg viewBox="0 0 90 36" xmlns="http://www.w3.org/2000/svg" height="32" aria-label="SSK">
+          <text x="0" y="28" font-family="'Oswald','Arial Black',sans-serif" font-weight="700" font-size="32" fill="#111" letter-spacing="2">SSK</text>
+        </svg>
       </div>
       <div class="brand-logo-item">
-        <img src="https://www.zett.co.jp/common/img/logo.png" alt="ZETT" style="height:32px;">
+        <svg viewBox="0 0 96 36" xmlns="http://www.w3.org/2000/svg" height="32" aria-label="ZETT">
+          <text x="0" y="28" font-family="'Oswald','Arial Black',sans-serif" font-weight="700" font-size="32" fill="#111" letter-spacing="2">ZETT</text>
+        </svg>
       </div>
       <!-- 第二組（無縫循環） -->
       <div class="brand-logo-item">
@@ -1187,10 +1199,14 @@ footer {
         <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Asics_Logo.svg" alt="ASICS">
       </div>
       <div class="brand-logo-item">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_SSK.svg" alt="SSK">
+        <svg viewBox="0 0 90 36" xmlns="http://www.w3.org/2000/svg" height="32" aria-label="SSK">
+          <text x="0" y="28" font-family="'Oswald','Arial Black',sans-serif" font-weight="700" font-size="32" fill="#111" letter-spacing="2">SSK</text>
+        </svg>
       </div>
       <div class="brand-logo-item">
-        <img src="https://www.zett.co.jp/common/img/logo.png" alt="ZETT" style="height:32px;">
+        <svg viewBox="0 0 96 36" xmlns="http://www.w3.org/2000/svg" height="32" aria-label="ZETT">
+          <text x="0" y="28" font-family="'Oswald','Arial Black',sans-serif" font-weight="700" font-size="32" fill="#111" letter-spacing="2">ZETT</text>
+        </svg>
       </div>
     </div>
   </div>
@@ -1594,13 +1610,12 @@ function renderAllCatSections() {
     return `
       <div class="cat-section reveal" id="cat-section-${cat}">
         <div class="cat-section-header">
-          <div class="cat-section-icon">${CAT_ICONS[cat]||'🏅'}</div>
           <h2 class="cat-section-title">${cat}</h2>
           <span class="cat-section-count">${catProducts.length} 項商品</span>
           ${moreBtn}
         </div>
         ${catProducts.length === 0
-          ? `<div class="cat-empty">📦 此分類尚無商品，請至後台新增。</div>`
+          ? ``
           : `
             <div class="product-grid product-grid-desktop">${cards}</div>
             <div class="product-scroll-wrap"><div class="product-scroll-inner">${cards}</div></div>
