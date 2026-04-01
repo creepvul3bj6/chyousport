@@ -326,7 +326,7 @@ nav {
 
 /* ── INFO STRIP ── */
 .info-strip {
-  position:sticky; top:68px; z-index:300;
+  position:relative; z-index:1;
   background:#fff; border-bottom:1px solid var(--border);
   border-top:2px solid var(--red);
 }
@@ -1171,8 +1171,8 @@ footer {
     </div>
   </div>
 
-  <!-- BRAND LOGO STRIP -->
-  <div class="brand-strip">
+  <!-- BRAND LOGO STRIP（放在 info-strip 下方、非 sticky 範圍內） -->
+  <div class="brand-strip" style="position:relative;z-index:0;">
     <div class="brand-track">
       <!-- 第一組 -->
       <div class="brand-logo-item">
@@ -1610,12 +1610,13 @@ function renderAllCatSections() {
     return `
       <div class="cat-section reveal" id="cat-section-${cat}">
         <div class="cat-section-header">
+          <div class="cat-section-icon">${CAT_ICONS[cat]||'🏅'}</div>
           <h2 class="cat-section-title">${cat}</h2>
           <span class="cat-section-count">${catProducts.length} 項商品</span>
           ${moreBtn}
         </div>
         ${catProducts.length === 0
-          ? ``
+          ? `<div class="cat-empty">📦 此分類尚無商品，請至後台新增。</div>`
           : `
             <div class="product-grid product-grid-desktop">${cards}</div>
             <div class="product-scroll-wrap"><div class="product-scroll-inner">${cards}</div></div>
