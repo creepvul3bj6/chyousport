@@ -222,6 +222,41 @@ nav {
 .marquee-item::after { content:'✦'; color:var(--red); opacity:.8; font-size:0.6rem; }
 @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
+/* ── BRAND LOGO STRIP ── */
+.brand-strip {
+  overflow:hidden; background:#fff;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:1.6rem 0;
+}
+.brand-track {
+  display:flex; align-items:center;
+  animation:brand-scroll 20s linear infinite;
+  white-space:nowrap; width:max-content;
+}
+.brand-track:hover { animation-play-state:paused; }
+@keyframes brand-scroll {
+  from { transform:translateX(0); }
+  to   { transform:translateX(-50%); }
+}
+.brand-logo-item {
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:0 3.5rem; flex-shrink:0;
+}
+.brand-logo-item img {
+  height:36px; width:auto;
+  object-fit:contain;
+  filter:grayscale(100%) opacity(0.45);
+  transition:filter .3s ease;
+}
+.brand-logo-item img:hover {
+  filter:grayscale(0%) opacity(1);
+}
+@media (max-width:480px) {
+  .brand-logo-item { padding:0 2.2rem; }
+  .brand-logo-item img { height:28px; }
+}
+
 /* ── SECTION HEADER ── */
 .sec { padding:5rem 5rem; }
 .sec-label {
@@ -1128,19 +1163,35 @@ footer {
     </div>
   </div>
 
-  <!-- MARQUEE -->
-  <div class="marquee-bar">
-    <div class="marquee-track">
-      <span class="marquee-item">🎉 全館限時優惠</span>
-      <span class="marquee-item">🚚 滿 $3,000 免運費</span>
-      <span class="marquee-item">⚡ 週一至週五當日出貨</span>
-      <span class="marquee-item">🛡️ 瑕疵品 7 天免費退換</span>
-      <span class="marquee-item">📍 苗栗市光復路103號實體店</span>
-      <span class="marquee-item">🎉 全館限時優惠</span>
-      <span class="marquee-item">🚚 滿 $3,000 免運費</span>
-      <span class="marquee-item">⚡ 週一至週五當日出貨</span>
-      <span class="marquee-item">🛡️ 瑕疵品 7 天免費退換</span>
-      <span class="marquee-item">📍 苗栗市光復路103號實體店</span>
+  <!-- BRAND LOGO STRIP -->
+  <div class="brand-strip">
+    <div class="brand-track">
+      <!-- 第一組 -->
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/MIZUNO_logo.svg" alt="Mizuno">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Asics_Logo.svg" alt="ASICS">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_SSK.svg" alt="SSK">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://www.zett.co.jp/common/img/logo.png" alt="ZETT" style="height:32px;">
+      </div>
+      <!-- 第二組（無縫循環） -->
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/MIZUNO_logo.svg" alt="Mizuno">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Asics_Logo.svg" alt="ASICS">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/Logo_SSK.svg" alt="SSK">
+      </div>
+      <div class="brand-logo-item">
+        <img src="https://www.zett.co.jp/common/img/logo.png" alt="ZETT" style="height:32px;">
+      </div>
     </div>
   </div>
 
