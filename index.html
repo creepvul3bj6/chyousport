@@ -281,6 +281,34 @@ nav {
 }
 .cat-card:hover .cat-arrow { opacity:1; transform:translateX(0); color:var(--red); }
 
+/* ── INFO STRIP ── */
+.info-strip {
+  position:sticky; top:68px; z-index:300;
+  background:#fff; border-bottom:1px solid var(--border);
+  border-top:2px solid var(--red);
+}
+.info-strip-inner {
+  display:flex; align-items:center; justify-content:center;
+  gap:0.6rem; padding:0.65rem 2rem; flex-wrap:nowrap;
+  overflow-x:auto; scrollbar-width:none;
+}
+.info-strip-inner::-webkit-scrollbar { display:none; }
+.info-strip-item {
+  font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:500;
+  color:var(--text2); white-space:nowrap; letter-spacing:0.01em;
+}
+.info-strip-divider {
+  color:var(--border2); font-size:0.75rem; flex-shrink:0;
+}
+@media (max-width:900px) {
+  .info-strip { top:60px; }
+  .info-strip-inner { gap:0.5rem; padding:0.6rem 1rem; justify-content:flex-start; }
+  .info-strip-item { font-size:0.78rem; }
+  .info-strip-divider { display:none; }
+  .info-strip-item::after { content:'·'; margin-left:0.5rem; color:var(--border2); }
+  .info-strip-item:last-child::after { display:none; }
+}
+
 /* ── CAT NAV STRIP ── */
 .cat-nav-wrap {
   position:sticky; top:68px; z-index:300;
@@ -372,11 +400,11 @@ nav {
 .btn-detail:hover { background:var(--bg3); border-color:var(--border2); color:var(--text); }
 .btn-add {
   flex:1; font-size:0.78rem; font-weight:600; color:#fff;
-  background:var(--red); border:none;
+  background:var(--black); border:none;
   padding:0.5rem 0.75rem; border-radius:7px; cursor:pointer; transition:background .18s;
   white-space:nowrap;
 }
-.btn-add:hover { background:var(--red-dark); }
+.btn-add:hover { background:#333; }
 
 /* ── DETAIL PAGE ── */
 #page-detail { padding-top:68px; min-height:100vh; background:var(--bg); }
@@ -1086,16 +1114,17 @@ footer {
 
   <!-- HERO -->
   <!-- CAT NAV STRIP -->
-  <div class="cat-nav-wrap" id="products-section">
-    <div class="cat-nav">
-      <button class="cat-nav-btn active" onclick="scrollToCat('棒壘球')">⚾ 棒壘球</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('桌球')">🏓 桌球</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('羽球')">🏸 羽球</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('球類運動')">🏀 球類</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('慢跑鞋&路跑鞋')">🏃 慢跑鞋</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('健身器材')">🏋️ 健身</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('運動配件')">🎽 配件</button>
-      <button class="cat-nav-btn" onclick="scrollToCat('出清商品')">🏷️ 出清</button>
+  <div class="info-strip" id="products-section">
+    <div class="info-strip-inner">
+      <span class="info-strip-item">🎉 全館限時優惠</span>
+      <span class="info-strip-divider">|</span>
+      <span class="info-strip-item">🚚 滿 $3,000 免運費</span>
+      <span class="info-strip-divider">|</span>
+      <span class="info-strip-item">⚡ 週一至週五當日出貨</span>
+      <span class="info-strip-divider">|</span>
+      <span class="info-strip-item">🛡️ 瑕疵品 7 天免費退換</span>
+      <span class="info-strip-divider">|</span>
+      <span class="info-strip-item">📍 苗栗市光復路103號實體店</span>
     </div>
   </div>
 
