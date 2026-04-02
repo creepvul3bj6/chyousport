@@ -1265,7 +1265,6 @@ footer {
 <div class="page" id="page-cat">
   <button class="cat-page-back" onclick="goBackFromCat()">← 返回</button>
   <div class="cat-page-header">
-    <div class="cat-page-icon" id="catPageIcon">🏅</div>
     <h2 class="cat-page-title" id="catPageTitle"></h2>
     <span class="cat-page-count" id="catPageCount"></span>
   </div>
@@ -1592,13 +1591,12 @@ function renderAllCatSections() {
     return `
       <div class="cat-section reveal" id="cat-section-${cat}">
         <div class="cat-section-header">
-          <div class="cat-section-icon">${CAT_ICONS[cat]||'🏅'}</div>
           <h2 class="cat-section-title">${cat}</h2>
           <span class="cat-section-count">${catProducts.length} 項商品</span>
           ${moreBtn}
         </div>
         ${catProducts.length === 0
-          ? `<div class="cat-empty">📦 此分類尚無商品，請至後台新增。</div>`
+          ? `<div class="cat-empty">此分類尚無商品。</div>`
           : `
             <div class="product-grid product-grid-desktop">${cards}</div>
             <div class="product-scroll-wrap"><div class="product-scroll-inner">${cards}</div></div>
@@ -1829,7 +1827,6 @@ function showCatPage(cat) {
   catPageBackScroll = window.scrollY;
   currentCatPage = cat;
   const catProducts = products.filter(p => p.cat === cat);
-  document.getElementById('catPageIcon').textContent = CAT_ICONS[cat] || '🏅';
   document.getElementById('catPageTitle').textContent = cat;
   document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
   document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
@@ -2803,7 +2800,6 @@ window.addEventListener('popstate', function(e) {
     if (state.cat) {
       currentCatPage = state.cat;
       const catProducts = products.filter(p => p.cat === state.cat);
-      document.getElementById('catPageIcon').textContent = CAT_ICONS[state.cat] || '🏅';
       document.getElementById('catPageTitle').textContent = state.cat;
       document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
       document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
@@ -2823,7 +2819,6 @@ window.addEventListener('popstate', function(e) {
       // 來自分類頁，回分類頁
       currentCatPage = state.catName;
       const catProducts = products.filter(p => p.cat === state.catName);
-      document.getElementById('catPageIcon').textContent = CAT_ICONS[state.catName] || '🏅';
       document.getElementById('catPageTitle').textContent = state.catName;
       document.getElementById('catPageCount').textContent = catProducts.length + ' 項商品';
       document.getElementById('catPageGrid').innerHTML = catProducts.map(p => renderProductCard(p)).join('');
