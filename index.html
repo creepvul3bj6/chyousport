@@ -634,23 +634,24 @@ nav {
 /* ── FOOTER ── */
 footer {
   background:var(--black); color:#fff;
-  padding:4rem 5rem 2.5rem;
+  padding:4.5rem 5rem 2.5rem;
 }
-.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem; margin-bottom:3rem; }
+.footer-grid { display:grid; grid-template-columns:2.2fr 1.2fr 1.6fr; gap:3.5rem; margin-bottom:3rem; }
 .footer-logo {
-  font-family:'Oswald',sans-serif; font-size:1.5rem; font-weight:700;
-  letter-spacing:0.06em; color:#fff; display:block; margin-bottom:1rem;
+  font-family:'Oswald',sans-serif; font-size:1.9rem; font-weight:700;
+  letter-spacing:0.06em; color:#fff; display:block; margin-bottom:1.1rem;
 }
 .footer-logo .dot { color:var(--red); }
-.footer-brand p { font-size:0.92rem; color:rgba(255,255,255,0.5); line-height:1.7; max-width:280px; }
-.footer-col h4 { font-size:0.75rem; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:1.2rem; }
-.footer-col a { display:block; font-size:0.92rem; color:rgba(255,255,255,0.6); text-decoration:none; margin-bottom:0.65rem; transition:color .18s; }
+.footer-brand p { font-size:1.05rem; color:rgba(255,255,255,0.55); line-height:1.8; max-width:300px; }
+.footer-col h4 { font-size:0.82rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:1.3rem; }
+.footer-col a { display:block; font-size:1.02rem; color:rgba(255,255,255,0.65); text-decoration:none; margin-bottom:0.8rem; transition:color .18s; }
 .footer-col a:hover { color:#fff; }
+.footer-col span { font-size:1.02rem !important; color:rgba(255,255,255,0.5) !important; margin-top:0.5rem !important; }
 .footer-bottom {
   border-top:1px solid rgba(255,255,255,0.1); padding-top:1.5rem;
   display:flex; justify-content:space-between; align-items:center;
 }
-.footer-copy { font-size:0.75rem; color:rgba(255,255,255,0.35); }
+.footer-copy { font-size:0.85rem; color:rgba(255,255,255,0.35); }
 
 /* ── ADMIN ── */
 #page-admin { min-height:100vh; padding-top:68px; background:var(--bg2); }
@@ -943,8 +944,11 @@ footer {
   .product-grid { grid-template-columns:repeat(2,1fr); gap:0.8rem; }
   .policy-sec { padding:3.5rem 2rem; }
   .policy-grid { grid-template-columns:1fr; }
-  footer { padding:3rem 2rem 2rem; }
-  .footer-grid { grid-template-columns:1fr 1fr; gap:2rem; }
+  footer { padding:3.5rem 2.5rem 2rem; }
+  .footer-grid { grid-template-columns:1fr 1fr; gap:2.5rem; }
+  .footer-brand p { font-size:1rem; max-width:100%; }
+  .footer-col a { font-size:0.98rem; }
+  .footer-col span { font-size:0.98rem !important; }
   .admin-wrap { padding:2rem 1.5rem; }
   .stats-grid { grid-template-columns:repeat(2,1fr); }
   .admin-form-row { grid-template-columns:1fr; }
@@ -984,9 +988,15 @@ footer {
   .btn-detail, .btn-add { width:100%; text-align:center; }
   .cart-sidebar { width:100%; right:-100%; }
   .policy-sec { padding:2.5rem 1.2rem; }
-  footer { padding:2.5rem 1.2rem 2rem; }
-  .footer-grid { grid-template-columns:1fr; gap:1.5rem; }
+  footer { padding:3rem 1.5rem 2rem; }
+  .footer-grid { grid-template-columns:1fr; gap:2rem; }
+  .footer-brand p { font-size:1rem; max-width:100%; }
+  .footer-logo { font-size:1.7rem; }
+  .footer-col a { font-size:1rem; margin-bottom:0.9rem; }
+  .footer-col span { font-size:1rem !important; }
+  .footer-col h4 { font-size:0.8rem; }
   .footer-bottom { flex-direction:column; gap:0.5rem; text-align:center; }
+  .footer-copy { font-size:0.82rem; }
   .admin-wrap { padding:1.5rem 1rem; }
   .stats-grid { grid-template-columns:repeat(2,1fr); gap:0.7rem; }
   .admin-tabs { overflow-x:auto; }
